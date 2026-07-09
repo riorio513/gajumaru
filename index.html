@@ -61,17 +61,20 @@
     border-radius:999px;
     padding:5px;
     box-shadow:var(--shadow);
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
   }
   nav.tabs button{
-    flex:1;
+    flex:none;
     border:none;
     background:transparent;
-    padding:10px 8px;
+    padding:10px 14px;
     border-radius:999px;
     font-family:inherit;
     font-size:.86rem;
     font-weight:700;
     color:var(--text-sub);
+    white-space:nowrap;
     cursor:pointer;
     transition:.2s;
   }
@@ -358,6 +361,94 @@
     color:var(--text-sub);
     margin-top:4px;
   }
+
+  /* tracker */
+  .stat-row{
+    display:flex;
+    gap:10px;
+  }
+  .stat-box{
+    flex:1;
+    text-align:center;
+    background:#f3f9f4;
+    border-radius:14px;
+    padding:14px 6px;
+  }
+  .stat-num{
+    font-size:1.4rem;
+    font-weight:900;
+    color:var(--green-deep);
+  }
+  .stat-label{
+    font-size:.72rem;
+    color:var(--text-sub);
+    margin-top:2px;
+  }
+  .record-list{
+    margin-top:14px;
+  }
+  .record-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 4px;
+    border-bottom:1px dashed var(--border);
+    font-size:.86rem;
+  }
+  .record-item:last-child{border-bottom:none;}
+  .record-item .meta{color:var(--text-sub);font-size:.78rem;}
+  .record-item .del{
+    border:none;
+    background:none;
+    color:#c98a8a;
+    font-size:.78rem;
+    cursor:pointer;
+    flex:none;
+  }
+  .empty-note{
+    font-size:.82rem;
+    color:var(--text-sub);
+    padding:10px 4px;
+  }
+
+  /* diagnosis */
+  .checkbox-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .checkbox-grid label{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:.85rem;
+    background:#f3f9f4;
+    padding:9px 10px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .checkbox-grid input{accent-color:var(--green-mid);}
+  .result-box{
+    margin-top:16px;
+    background:#f3f9f4;
+    border-radius:14px;
+    padding:16px;
+    font-size:.88rem;
+    line-height:1.8;
+  }
+  .result-box h4{
+    margin:0 0 6px;
+    color:var(--green-deep);
+    font-size:.92rem;
+  }
+  .result-box ul{margin:4px 0 10px;padding-left:1.2em;}
+  .result-box p:last-child{margin-bottom:0;}
+
+  @media (max-width: 420px){
+    .checkbox-grid{grid-template-columns:1fr;}
+  }
 </style>
 </head>
 <body>
@@ -373,6 +464,8 @@
     <button class="active" data-panel="checklist">準備チェックリスト</button>
     <button data-panel="calendar">デビュー日逆算カレンダー</button>
     <button data-panel="profile">自己紹介文ビルダー</button>
+    <button data-panel="tracker">継続トラッカー</button>
+    <button data-panel="diagnosis">機材・ジャンル診断</button>
   </nav>
 
   <section class="panel active" id="panel-checklist">
@@ -476,6 +569,103 @@
       <div class="disclaimer">
         入力した内容はこの端末（localStorage）に保存され、次回開いたときも残ります。生成される文章はテンプレートに沿ったものなので、自分らしい言い回しに調整して使ってくださいね。
       </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-tracker">
+    <div class="card">
+      <h2 class="section-title">📈 継続トラッカー</h2>
+      <p class="lead">配信のたびに1分だけ記録すると、まいにち配信ストリークや累計時間が見えてきます。</p>
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-num" id="stTotalCount">0</div>
+          <div class="stat-label">累計配信回数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stTotalHours">0</div>
+          <div class="stat-label">累計配信時間(h)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stStreak">0</div>
+          <div class="stat-label">まいにち配信ストリーク</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="font-size:.98rem;">🎙️ 配信ログ</h2>
+      <div class="date-input-row">
+        <input type="date" id="logDate">
+        <input type="number" id="logMinutes" placeholder="配信時間(分)" min="1" style="width:130px;">
+        <input type="text" id="logNote" placeholder="メモ（任意）" style="flex:1;min-width:140px;">
+        <button class="btn" id="logAddBtn">記録する</button>
+      </div>
+      <div id="logList" class="record-list"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="font-size:.98rem;">👋 枠周り記録</h2>
+      <p class="lead">挨拶に行った配信・お世話になった人をメモしておく場所です。</p>
+      <div class="date-input-row">
+        <input type="date" id="visitDate">
+        <input type="text" id="visitName" placeholder="相手のライバー名" style="flex:1;min-width:140px;">
+        <input type="text" id="visitNote" placeholder="メモ（任意）" style="flex:1;min-width:140px;">
+        <button class="btn" id="visitAddBtn">記録する</button>
+      </div>
+      <div id="visitList" class="record-list"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-diagnosis">
+    <div class="card">
+      <h2 class="section-title">🎛️ 機材診断</h2>
+      <p class="lead">端末・予算・やりたい配信スタイルを選ぶと、目安の機材構成を提案します（非AI・固定ロジックによる診断です）。</p>
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">使う端末</span>
+          <select id="dgDevice">
+            <option value="iphone">iPhone</option>
+            <option value="android">Android</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="field-label">機材にかけられる予算</span>
+          <select id="dgBudget">
+            <option value="0">0円（今持っているものだけ）</option>
+            <option value="10000">1万円以内</option>
+            <option value="30000">3万円以内</option>
+            <option value="50000">5万円以上</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="field-label">やりたい配信スタイル</span>
+          <select id="dgStyle">
+            <option value="talk">雑談中心</option>
+            <option value="sing">歌枠中心</option>
+            <option value="asmr">ASMR中心</option>
+            <option value="event">企画・声劇中心</option>
+          </select>
+        </label>
+      </div>
+      <button class="btn" id="dgGearBtn">機材を診断する</button>
+      <div id="dgGearResult" class="result-box" style="display:none;"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">🌱 配信ジャンル診断</h2>
+      <p class="lead">得意なこと・好きなことをチェックすると、相性の良さそうな配信ジャンルの候補を出します。</p>
+      <div class="checkbox-grid" id="dgTraits">
+        <label><input type="checkbox" value="talk"> 人と話すのが好き</label>
+        <label><input type="checkbox" value="listen"> 聞き役・相談役が得意</label>
+        <label><input type="checkbox" value="sing"> 歌うのが好き</label>
+        <label><input type="checkbox" value="draw"> 絵を描くのが好き</label>
+        <label><input type="checkbox" value="game"> ゲームが好き</label>
+        <label><input type="checkbox" value="cook"> 料理・お菓子作りが好き</label>
+        <label><input type="checkbox" value="voice"> 声・読み聞かせが好き</label>
+        <label><input type="checkbox" value="night"> 夜更かし・深夜型</label>
+      </div>
+      <button class="btn" id="dgGenreBtn">ジャンルを診断する</button>
+      <div id="dgGenreResult" class="result-box" style="display:none;"></div>
     </div>
   </section>
 </div>
@@ -772,6 +962,218 @@ document.querySelectorAll('.copy-btn').forEach(btn=>{
     btn.classList.add('copied');
     setTimeout(()=>{ btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 1500);
   });
+});
+
+// ---------- continuation tracker ----------
+const LOG_KEY = 'gajumaru:streamLogs:v1';
+const VISIT_KEY = 'gajumaru:visitLogs:v1';
+
+function loadLogs(key){
+  try{ return JSON.parse(localStorage.getItem(key)) || []; }catch(e){ return []; }
+}
+function saveLogs(key, arr){ localStorage.setItem(key, JSON.stringify(arr)); }
+
+function todayISO(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function computeStreak(dates){
+  const dateSet = new Set(dates);
+  if(dateSet.size === 0) return 0;
+  const sorted = [...dateSet].sort();
+  const maxDate = new Date(sorted[sorted.length-1] + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diffDays = Math.round((today - maxDate) / 86400000);
+  if(diffDays > 1) return 0; // 直近の配信が今日/昨日でなければストリークは途切れている
+  let streak = 0;
+  let cur = new Date(maxDate);
+  function fmtISO(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  while(dateSet.has(fmtISO(cur))){
+    streak++;
+    cur.setDate(cur.getDate()-1);
+  }
+  return streak;
+}
+
+function renderTracker(){
+  const logs = loadLogs(LOG_KEY);
+  const visits = loadLogs(VISIT_KEY);
+
+  document.getElementById('stTotalCount').textContent = logs.length;
+  const totalMin = logs.reduce((s,l)=>s+Number(l.minutes||0),0);
+  document.getElementById('stTotalHours').textContent = (totalMin/60).toFixed(1);
+  document.getElementById('stStreak').textContent = computeStreak(logs.map(l=>l.date));
+
+  const logList = document.getElementById('logList');
+  if(logs.length === 0){
+    logList.innerHTML = '<div class="empty-note">まだ記録がありません。配信したら記録してみてください。</div>';
+  } else {
+    const sorted = [...logs].sort((a,b)=> b.date.localeCompare(a.date));
+    logList.innerHTML = sorted.map(l=>{
+      const idx = logs.indexOf(l);
+      return `<div class="record-item">
+        <span>${l.date}　${l.minutes}分${l.note ? '　'+l.note : ''}</span>
+        <button class="del" data-type="log" data-idx="${idx}">削除</button>
+      </div>`;
+    }).join('');
+  }
+
+  const visitList = document.getElementById('visitList');
+  if(visits.length === 0){
+    visitList.innerHTML = '<div class="empty-note">まだ記録がありません。</div>';
+  } else {
+    const sorted = [...visits].sort((a,b)=> b.date.localeCompare(a.date));
+    visitList.innerHTML = sorted.map(v=>{
+      const idx = visits.indexOf(v);
+      return `<div class="record-item">
+        <span>${v.date}　${v.name}${v.note ? '　'+v.note : ''}</span>
+        <button class="del" data-type="visit" data-idx="${idx}">削除</button>
+      </div>`;
+    }).join('');
+  }
+
+  logList.querySelectorAll('.del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const arr = loadLogs(LOG_KEY);
+      arr.splice(Number(btn.dataset.idx),1);
+      saveLogs(LOG_KEY, arr);
+      renderTracker();
+    });
+  });
+  visitList.querySelectorAll('.del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const arr = loadLogs(VISIT_KEY);
+      arr.splice(Number(btn.dataset.idx),1);
+      saveLogs(VISIT_KEY, arr);
+      renderTracker();
+    });
+  });
+}
+
+document.getElementById('logDate').value = todayISO();
+document.getElementById('visitDate').value = todayISO();
+
+document.getElementById('logAddBtn').addEventListener('click', ()=>{
+  const date = document.getElementById('logDate').value;
+  const minutes = document.getElementById('logMinutes').value;
+  const note = document.getElementById('logNote').value.trim();
+  if(!date || !minutes){ alert('日付と配信時間を入力してください'); return; }
+  const arr = loadLogs(LOG_KEY);
+  arr.push({date, minutes:Number(minutes), note});
+  saveLogs(LOG_KEY, arr);
+  document.getElementById('logMinutes').value = '';
+  document.getElementById('logNote').value = '';
+  renderTracker();
+});
+
+document.getElementById('visitAddBtn').addEventListener('click', ()=>{
+  const date = document.getElementById('visitDate').value;
+  const name = document.getElementById('visitName').value.trim();
+  const note = document.getElementById('visitNote').value.trim();
+  if(!date || !name){ alert('日付と相手のライバー名を入力してください'); return; }
+  const arr = loadLogs(VISIT_KEY);
+  arr.push({date, name, note});
+  saveLogs(VISIT_KEY, arr);
+  document.getElementById('visitName').value = '';
+  document.getElementById('visitNote').value = '';
+  renderTracker();
+});
+
+renderTracker();
+
+// ---------- gear & genre diagnosis ----------
+function buildGearRecommendation(device, budget, style){
+  const styleNote = {
+    talk: '雑談中心なら聞き取りやすさが最優先です。',
+    sing: '歌枠を意識するなら、できるだけ早い段階で音質面への投資を検討すると安心です。',
+    asmr: 'ASMRは繊細な音まで拾う必要があるため、機材の質が特に効いてきます。',
+    event: '声を演じ分けるなら、口元との距離を一定に保てるマイク環境が話しやすさに直結します。',
+  }[style];
+
+  const budgetPlan = {
+    0: {
+      title:'まずは今持っている端末だけでOK',
+      items:['スマホ内蔵マイク（口元から10〜20cmくらいを意識）', '静かな部屋・時間帯を選ぶ', '（あれば）スマホスタンドで固定して配信中の揺れを防ぐ'],
+    },
+    10000: {
+      title:'1万円以内の入門構成',
+      items:['イヤホンマイク、または安価な単一指向性USBマイク', '簡易マイクスタンド or クリップ', 'ポップガード代わりのマスク・布でも可'],
+    },
+    30000: {
+      title:'3万円以内のステップアップ構成',
+      items:['USBコンデンサーマイク（1〜2万円台）', 'マイクアーム・ポップガード', '（余裕があれば）簡易オーディオインターフェース'],
+    },
+    50000: {
+      title:'5万円以上のしっかり構成',
+      items:['コンデンサーマイク＋オーディオミキサー（例: YAMAHA AG03系）', 'マイクアーム・ポップガード・防振マウント', 'ヘッドホン（モニタリング用）'],
+    },
+  }[budget];
+
+  const deviceNote = device === 'iphone'
+    ? 'iPhoneはLightning/USB-Cなど機種により変換アダプタが必要な場合があるので、購入前にお使いの機種の接続方式を確認してください。'
+    : 'AndroidはUSB OTG（外部マイク接続）に対応しているか、事前に機種名で確認してください。';
+
+  return `
+    <h4>${budgetPlan.title}</h4>
+    <ul>${budgetPlan.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+    <p>${styleNote}</p>
+    <p>${deviceNote}</p>
+  `;
+}
+
+document.getElementById('dgGearBtn').addEventListener('click', ()=>{
+  const device = document.getElementById('dgDevice').value;
+  const budget = Number(document.getElementById('dgBudget').value);
+  const style = document.getElementById('dgStyle').value;
+  const box = document.getElementById('dgGearResult');
+  box.innerHTML = buildGearRecommendation(device, budget, style);
+  box.style.display = 'block';
+});
+
+const TRAIT_GENRE_MAP = {
+  talk:   [['雑談配信',3],  ['企画配信',1]],
+  listen: [['雑談配信',2],  ['お悩み相談ふう配信',3]],
+  sing:   [['歌枠',4]],
+  draw:   [['お絵かき配信',4]],
+  game:   [['ゲーム実況',4]],
+  cook:   [['料理・お菓子作り配信',3], ['ASMR配信',1]],
+  voice:  [['ASMR配信',3], ['朗読・声劇配信',3]],
+  night:  [['深夜雑談配信',3], ['ASMR配信',1]],
+};
+const GENRE_DESC = {
+  '雑談配信': '一番始めやすい定番ジャンル。得意な話題を2〜3個ストックしておくと安心です。',
+  '企画配信': 'お題やゲーム性のある企画は初見さんも参加しやすく、盛り上がりを作りやすいです。',
+  'お悩み相談ふう配信': '聞き上手を活かせるスタイル。リスナーとの距離が縮まりやすいです。',
+  '歌枠': '歌唱力だけでなく選曲・MCで個性を出せます。著作権まわりのルール確認は必須です。',
+  'お絵かき配信': '手元を見せながらの配信は作業工程そのものがコンテンツになります。',
+  'ゲーム実況': '好きなゲームがあるなら親和性が高いジャンル。配信可能タイトルの確認を忘れずに。',
+  '料理・お菓子作り配信': '生活感のある配信は共感を得やすく、視聴者との距離が縮まりやすいです。',
+  'ASMR配信': '繊細な音作りが要になるジャンル。機材投資の優先度が上がりやすい点は要チェック。',
+  '朗読・声劇配信': '声の表現力を活かせるジャンル。台本のストックを用意しておくと安心です。',
+  '深夜雑談配信': '夜型の生活リズムと相性が良く、落ち着いた雰囲気のファン層を作りやすいです。',
+};
+
+document.getElementById('dgGenreBtn').addEventListener('click', ()=>{
+  const checked = [...document.querySelectorAll('#dgTraits input:checked')].map(el=>el.value);
+  const box = document.getElementById('dgGenreResult');
+  if(checked.length === 0){
+    alert('得意なこと・好きなことを1つ以上チェックしてください');
+    return;
+  }
+  const scores = {};
+  checked.forEach(trait=>{
+    (TRAIT_GENRE_MAP[trait]||[]).forEach(([genre, score])=>{
+      scores[genre] = (scores[genre]||0) + score;
+    });
+  });
+  const ranked = Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  box.innerHTML = `
+    <h4>相性の良さそうな配信ジャンル候補</h4>
+    <ul>${ranked.map(([genre])=>`<li><b>${genre}</b> — ${GENRE_DESC[genre]||''}</li>`).join('')}</ul>
+    <p>あくまで候補です。実際に試してみて、自分が一番楽しく続けられそうなものを選んでくださいね。</p>
+  `;
+  box.style.display = 'block';
 });
 </script>
 </body>
