@@ -11,6 +11,7 @@ import DiagnosisPanel from "@/components/panels/DiagnosisPanel";
 import GlossaryPanel from "@/components/panels/GlossaryPanel";
 import IdeaBankPanel from "@/components/panels/IdeaBankPanel";
 import MentalCarePanel from "@/components/panels/MentalCarePanel";
+import GuestMigrationBanner from "@/components/GuestMigrationBanner";
 import { PANEL_LABELS, type PanelKey } from "@/lib/panels";
 
 export default function ToolApp({ userId }: { userId: string | null }) {
@@ -29,6 +30,7 @@ export default function ToolApp({ userId }: { userId: string | null }) {
       <div className="container">
         <div className="current-panel-label">{PANEL_LABELS[active]}</div>
 
+        {active === "home" && <GuestMigrationBanner userId={userId} />}
         {active === "home" && <HomePanel userId={userId} onNavigate={setActive} />}
         {active === "checklist" && <ChecklistPanel userId={userId} />}
         {active === "calendar" && <CalendarPanel userId={userId} />}
