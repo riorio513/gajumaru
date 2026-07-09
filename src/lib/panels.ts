@@ -21,10 +21,12 @@ export const PANEL_LABELS: Record<PanelKey, string> = {
   help: "お役立ち情報",
 };
 
-export const NAV_ORDER: PanelKey[] = [
-  "home",
-  "checklist",
-  "calendar",
+// ハンバーガーメニューのトップレベル項目
+export const TOP_NAV_ORDER: PanelKey[] = ["home", "checklist", "calendar"];
+
+// 「お役立ち機能」サブメニューにまとめる項目
+export const HELP_GROUP_LABEL = "お役立ち機能";
+export const HELP_GROUP_ORDER: PanelKey[] = [
   "profile",
   "tracker",
   "diagnosis",
@@ -32,3 +34,5 @@ export const NAV_ORDER: PanelKey[] = [
   "ideabank",
   "help",
 ];
+
+export const NAV_ORDER: PanelKey[] = [...TOP_NAV_ORDER, ...HELP_GROUP_ORDER];

@@ -112,6 +112,41 @@ header{
   background:var(--green-mid);
   color:#fff;
 }
+.side-nav-group-toggle{
+  text-align:left;
+  border:none;
+  background:transparent;
+  padding:12px 14px;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:.9rem;
+  font-weight:700;
+  color:var(--text-sub);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.side-nav-group-toggle:hover{
+  background:#f3f9f4;
+}
+.side-nav-group-toggle .chevron{
+  font-size:.8rem;
+  color:var(--text-sub);
+}
+.side-nav-group{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding-left:10px;
+  border-left:2px solid var(--border);
+  margin-left:14px;
+}
+.side-nav-group button[data-panel]{
+  font-size:.85rem;
+  font-weight:600;
+  padding:10px 12px;
+}
 .side-nav .side-nav-footer{
   margin-top:auto;
   padding-top:10px;

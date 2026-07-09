@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { NAV_ORDER, PANEL_LABELS, type PanelKey } from "@/lib/panels";
+import {
+  TOP_NAV_ORDER,
+  HELP_GROUP_ORDER,
+  HELP_GROUP_LABEL,
+  PANEL_LABELS,
+  type PanelKey,
+} from "@/lib/panels";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SideNav({
@@ -14,6 +20,9 @@ export default function SideNav({
   isLoggedIn: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [groupOpen, setGroupOpen] = useState<boolean>(() =>
+    (HELP_GROUP_ORDER as PanelKey[]).includes(active)
+  );
 
   async function handleLogout() {
     const supabase = createClient();
@@ -48,7 +57,7 @@ export default function SideNav({
             ✕
           </button>
         </div>
-        {NAV_ORDER.map((key) => (
+        {TOP_NAV_ORDER.map((key) => (
           <button
             key={key}
             data-panel={key}
@@ -61,6 +70,32 @@ export default function SideNav({
             {PANEL_LABELS[key]}
           </button>
         ))}
+
+        <button
+          className="side-nav-group-toggle"
+          aria-expanded={groupOpen}
+          onClick={() => setGroupOpen((v) => !v)}
+        >
+          {HELP_GROUP_LABEL}
+          <span className="chevron">{groupOpen ? "▾" : "▸"}</span>
+        </button>
+        {groupOpen && (
+          <div className="side-nav-group">
+            {HELP_GROUP_ORDER.map((key) => (
+              <button
+                key={key}
+                data-panel={key}
+                className={active === key ? "active" : ""}
+                onClick={() => {
+                  onSelect(key);
+                  setOpen(false);
+                }}
+              >
+                {PANEL_LABELS[key]}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="side-nav-footer">
           {isLoggedIn ? (
             <button onClick={handleLogout}>ログアウト</button>
