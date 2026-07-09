@@ -449,6 +449,42 @@
   @media (max-width: 420px){
     .checkbox-grid{grid-template-columns:1fr;}
   }
+
+  /* idea bank chips */
+  .chip{
+    font-family:inherit;
+    font-size:.82rem;
+    font-weight:700;
+    padding:8px 14px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:#fff;
+    color:var(--text-sub);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .chip.active{
+    background:var(--green-mid);
+    border-color:var(--green-mid);
+    color:#fff;
+  }
+
+  /* glossary */
+  .glossary-item{
+    padding:12px 4px;
+    border-bottom:1px dashed var(--border);
+  }
+  .glossary-item:last-child{border-bottom:none;}
+  .glossary-item .term{
+    font-weight:700;
+    color:var(--green-deep);
+    font-size:.92rem;
+  }
+  .glossary-item .desc{
+    font-size:.85rem;
+    color:var(--text);
+    margin-top:3px;
+  }
 </style>
 </head>
 <body>
@@ -466,6 +502,9 @@
     <button data-panel="profile">自己紹介文ビルダー</button>
     <button data-panel="tracker">継続トラッカー</button>
     <button data-panel="diagnosis">機材・ジャンル診断</button>
+    <button data-panel="glossary">IRIAM用語集</button>
+    <button data-panel="ideabank">配信ネタ帳</button>
+    <button data-panel="mental">メンタルケア</button>
   </nav>
 
   <section class="panel active" id="panel-checklist">
@@ -666,6 +705,66 @@
       </div>
       <button class="btn" id="dgGenreBtn">ジャンルを診断する</button>
       <div id="dgGenreResult" class="result-box" style="display:none;"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-glossary">
+    <div class="card">
+      <h2 class="section-title">📖 IRIAM用語集</h2>
+      <p class="lead">配信を始める前に出会う独自用語をまとめました。</p>
+      <input type="text" id="glossarySearch" placeholder="用語を検索（例：ダイヤ）" style="width:100%;font-family:inherit;font-size:.9rem;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#fafdfa;color:var(--text);margin-bottom:14px;">
+      <div id="glossaryList"></div>
+      <div class="disclaimer">
+        <b>おことわり：</b>各用語の説明はIRIAM公式FAQや配信者向け情報をもとにした要約です。ランクの計算式など一部は公式非公開・推定値の情報も含まれるため、正式な仕様は必ずアプリ内の公式ヘルプでご確認ください。
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-ideabank">
+    <div class="card">
+      <h2 class="section-title">💡 配信ネタ帳</h2>
+      <p class="lead">「何を話せばいいか分からない」を減らすための、自分専用のネタストックです。カテゴリごとに書き溜めておきましょう。</p>
+      <div class="date-input-row" id="ideaCategoryTabs">
+        <button class="chip active" data-cat="talk">雑談ネタ</button>
+        <button class="chip" data-cat="event">企画ネタ</button>
+        <button class="chip" data-cat="night">深夜・大人向け</button>
+        <button class="chip" data-cat="niche">ニッチ</button>
+      </div>
+      <div class="date-input-row">
+        <input type="text" id="ideaInput" placeholder="思いついたネタを入力…" style="flex:1;min-width:160px;">
+        <button class="btn" id="ideaAddBtn">追加する</button>
+        <button class="btn secondary" id="ideaSeedBtn">サンプルを追加</button>
+      </div>
+      <div id="ideaList" class="record-list"></div>
+      <button class="btn secondary" id="ideaRandomBtn" style="margin-top:10px;">🎲 保存したネタからランダムに1つ</button>
+      <div id="ideaRandomResult" class="result-box" style="display:none;"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-mental">
+    <div class="card">
+      <h2 class="section-title">🌷 今日できたこと日記</h2>
+      <p class="lead">配信の準備は地味な積み重ねです。どんなに小さなことでも、進んだ分だけ記録してみてください。</p>
+      <div class="date-input-row">
+        <input type="text" id="winInput" placeholder="例）立ち絵の依頼文を書いた" style="flex:1;min-width:160px;">
+        <button class="btn" id="winAddBtn">記録する</button>
+      </div>
+      <div id="winList" class="record-list"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="font-size:.98rem;">💌 気持ちが沈んだときに</h2>
+      <p class="lead">準備期間はしんどくて当たり前、と言われています。少し休みたくなったら読んでみてください。</p>
+      <div id="mentalMessageBox" class="result-box"></div>
+      <button class="btn secondary" id="mentalNextBtn" style="margin-top:10px;">別の言葉を読む</button>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title" style="font-size:.98rem;">🌙 先輩たちのつまずきポイント</h2>
+      <div id="seniorQaList"></div>
+      <div class="disclaimer">
+        ここでの内容は、当事者の体験談・事務所ブログなどから見えてきた一般的な傾向を要約したもので、専門的な医療・カウンセリングの代わりにはなりません。気持ちの不調が続く場合は、事務所の相談窓口や専門機関に相談することも選択肢に入れてくださいね。
+      </div>
     </div>
   </section>
 </div>
@@ -1175,6 +1274,175 @@ document.getElementById('dgGenreBtn').addEventListener('click', ()=>{
   `;
   box.style.display = 'block';
 });
+
+// ---------- glossary ----------
+const GLOSSARY = [
+  { term:'ギフト', desc:'リスナーが配信者に贈るアイテム。ダイヤを使って送ることができます。' },
+  { term:'スター', desc:'配信の応援・盛り上がりに関わるポイントの一種です。' },
+  { term:'ダイヤ（時間ダイヤ・応援ダイヤ）', desc:'IRIAM内で使うポイント。時間経過で貯まる「時間ダイヤ」と、購入する「応援ダイヤ」などの種類があります。' },
+  { term:'応援ポイント', desc:'リスナーが配信者を応援する際に貯まるポイント。ランキングや特典に関わることがあります。' },
+  { term:'盛り上がりスコア', desc:'配信の盛り上がり度合いを示す指標。ギフトやコメントなどの反応から算出されるとされています。' },
+  { term:'ランク（D〜S帯）', desc:'活動状況などに応じて設定される段階。上位ランクほど露出や機能面で有利になるとされます。※計算式は公式非公開・推定値です。' },
+  { term:'あんしんランクスコア', desc:'安心して配信・視聴できるかどうかの指標とされるスコア。詳細は公式非公開です。' },
+  { term:'まいにち配信バッジ', desc:'30分以上の配信を一定日数（目安7日）連続で行うと得られるバッジ。途中で途切れると連続記録がリセットされるとされます。' },
+  { term:'プロフタグ・キャラタグ', desc:'プロフィールに設定できるタグ。リスナーが好みの配信者を見つける手がかりになります。' },
+  { term:'初心者向け配信・ウェルカムパス', desc:'デビュー直後のライバーを対象にした初期支援の仕組み。露出のサポートなどが含まれるとされます。' },
+  { term:'トップバナーチャレンジ（バナイベ）', desc:'アプリのトップ画面のバナー掲載枠を目指すイベント。デビューから一定期間後に参加できるようになることが多いとされます。' },
+  { term:'枠周り', desc:'他のライバーの配信（＝枠）に挨拶やコメントをしに行くこと。関係作りや認知拡大のための活動です。' },
+  { term:'準備期間', desc:'初配信前にX運用や設定準備などを行う期間の慣習。数週間〜年単位かける人もいるとされます。' },
+];
+
+function renderGlossary(filter){
+  const q = (filter||'').trim().toLowerCase();
+  const list = GLOSSARY.filter(g => !q || g.term.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q));
+  const el = document.getElementById('glossaryList');
+  el.innerHTML = list.length
+    ? list.map(g=>`<div class="glossary-item"><div class="term">${g.term}</div><div class="desc">${g.desc}</div></div>`).join('')
+    : '<div class="empty-note">該当する用語が見つかりませんでした。</div>';
+}
+renderGlossary('');
+document.getElementById('glossarySearch').addEventListener('input', (e)=> renderGlossary(e.target.value));
+
+// ---------- idea bank ----------
+const IDEA_KEY = 'gajumaru:ideaBank:v1';
+const IDEA_CATS = { talk:'雑談ネタ', event:'企画ネタ', night:'深夜・大人向け', niche:'ニッチ' };
+const IDEA_SEEDS = {
+  talk:  ['今日あった小さな出来事', '好きな食べ物ランキング', '最近ハマってること', '休日の過ごし方', 'ペットや動物の話'],
+  event: ['○×クイズ企画', 'しりとり配信', 'お絵かきリクエスト企画', 'リスナーと一緒に何か決める投票企画', '目標達成チャレンジ配信'],
+  night: ['恋愛トーク', 'ちょっと大人な相談コーナー', '本音トーク回', '昔の失敗談'],
+  niche: ['特定ジャンルの知識披露', 'コレクション自慢', '資格・勉強の進捗報告', '謎解き・パズル配信'],
+};
+let currentIdeaCat = 'talk';
+
+function loadIdeas(){
+  try{ return JSON.parse(localStorage.getItem(IDEA_KEY)) || {talk:[],event:[],night:[],niche:[]}; }catch(e){ return {talk:[],event:[],night:[],niche:[]}; }
+}
+function saveIdeas(data){ localStorage.setItem(IDEA_KEY, JSON.stringify(data)); }
+
+function renderIdeaList(){
+  const data = loadIdeas();
+  const arr = data[currentIdeaCat] || [];
+  const el = document.getElementById('ideaList');
+  el.innerHTML = arr.length
+    ? arr.map((t,i)=>`<div class="record-item"><span>${t}</span><button class="del" data-idx="${i}">削除</button></div>`).join('')
+    : '<div class="empty-note">まだネタがありません。「サンプルを追加」か、思いついたネタを追加してみてください。</div>';
+  el.querySelectorAll('.del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const d = loadIdeas();
+      d[currentIdeaCat].splice(Number(btn.dataset.idx),1);
+      saveIdeas(d);
+      renderIdeaList();
+    });
+  });
+}
+renderIdeaList();
+
+document.querySelectorAll('#ideaCategoryTabs .chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#ideaCategoryTabs .chip').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentIdeaCat = btn.dataset.cat;
+    document.getElementById('ideaRandomResult').style.display = 'none';
+    renderIdeaList();
+  });
+});
+
+document.getElementById('ideaAddBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('ideaInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const d = loadIdeas();
+  d[currentIdeaCat].push(text);
+  saveIdeas(d);
+  input.value = '';
+  renderIdeaList();
+});
+
+document.getElementById('ideaSeedBtn').addEventListener('click', ()=>{
+  const d = loadIdeas();
+  const existing = new Set(d[currentIdeaCat]);
+  (IDEA_SEEDS[currentIdeaCat]||[]).forEach(s=>{ if(!existing.has(s)) d[currentIdeaCat].push(s); });
+  saveIdeas(d);
+  renderIdeaList();
+});
+
+document.getElementById('ideaRandomBtn').addEventListener('click', ()=>{
+  const d = loadIdeas();
+  const all = [];
+  Object.keys(d).forEach(cat=> d[cat].forEach(t=> all.push({cat, t})));
+  const box = document.getElementById('ideaRandomResult');
+  if(all.length === 0){
+    box.innerHTML = '<p>まだ保存されたネタがありません。まずはネタを追加してみてください。</p>';
+  } else {
+    const pick = all[Math.floor(Math.random()*all.length)];
+    box.innerHTML = `<h4>${IDEA_CATS[pick.cat]}</h4><p>${pick.t}</p>`;
+  }
+  box.style.display = 'block';
+});
+
+// ---------- mental care ----------
+const WIN_KEY = 'gajumaru:winDiary:v1';
+function loadWins(){ try{ return JSON.parse(localStorage.getItem(WIN_KEY)) || []; }catch(e){ return []; } }
+function saveWins(arr){ localStorage.setItem(WIN_KEY, JSON.stringify(arr)); }
+
+function renderWinList(){
+  const wins = loadWins();
+  const el = document.getElementById('winList');
+  el.innerHTML = wins.length
+    ? [...wins].reverse().map((w)=>{
+        const idx = wins.indexOf(w);
+        return `<div class="record-item"><span>${w.date}　${w.text}</span><button class="del" data-idx="${idx}">削除</button></div>`;
+      }).join('')
+    : '<div class="empty-note">まだ記録がありません。今日できたことを1つ書いてみましょう。</div>';
+  el.querySelectorAll('.del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const arr = loadWins();
+      arr.splice(Number(btn.dataset.idx),1);
+      saveWins(arr);
+      renderWinList();
+    });
+  });
+}
+renderWinList();
+
+document.getElementById('winAddBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('winInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const arr = loadWins();
+  arr.push({date: todayISO(), text});
+  saveWins(arr);
+  input.value = '';
+  renderWinList();
+});
+
+const MENTAL_MESSAGES = [
+  '「準備期間はしんどくて当たり前」——多くの人が同じ道を通っています。今のペースのままで大丈夫です。',
+  '毎日投稿できなくても、配信できなくても、それはサボりではありません。休むことも準備のうちです。',
+  '完璧な自己紹介や台本じゃなくても、まずは一言話せたらそれで十分なスタートです。',
+  '不安を感じるのは、それだけ真剣に向き合っている証拠です。焦らなくて大丈夫。',
+  '誰かと比べて落ち込んだ日があってもいい。あなたのペースで進めば十分です。',
+  '「楽しい休暇」と思える日も、「しんどい」と思う日も、どちらもあっていい準備期間です。',
+];
+let lastMentalIdx = -1;
+function showMentalMessage(){
+  let idx;
+  do{ idx = Math.floor(Math.random()*MENTAL_MESSAGES.length); }while(idx===lastMentalIdx && MENTAL_MESSAGES.length>1);
+  lastMentalIdx = idx;
+  document.getElementById('mentalMessageBox').innerHTML = `<p>${MENTAL_MESSAGES[idx]}</p>`;
+}
+showMentalMessage();
+document.getElementById('mentalNextBtn').addEventListener('click', showMentalMessage);
+
+const SENIOR_QA = [
+  { q:'枠周りで人と関わるのが苦手で不安…', a:'「最初はぎこちなくて当然」という声が多くあります。無理に長居せず、一言挨拶するだけでも十分という人も多いです。' },
+  { q:'ネタ切れが怖い', a:'話すテーマを事前に3つくらいストックしておくだけで気持ちが楽になった、という体験談があります。「配信ネタ帳」タブも活用してみてください。' },
+  { q:'フォロワーが増えず過疎が不安', a:'個人差が大きい部分です。数字より「続けられているか」を基準にする方が心が保ちやすい、という声もあります。' },
+  { q:'毎日配信バッジのプレッシャーがつらい', a:'途切れることを気にしすぎて燃え尽きてしまう例も報告されています。無理のないペースを優先しても大丈夫です。' },
+];
+document.getElementById('seniorQaList').innerHTML = SENIOR_QA.map(qa=>
+  `<div class="glossary-item"><div class="term">Q. ${qa.q}</div><div class="desc">A. ${qa.a}</div></div>`
+).join('');
 </script>
 </body>
 </html>
