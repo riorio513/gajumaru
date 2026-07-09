@@ -30,7 +30,7 @@ export default function HomePanel({
           <div className="title">✅ 準備チェックリストの続き</div>
           <div className="desc">やることを1つずつ確認していきましょう</div>
         </button>
-        <button className="shortcut-card" onClick={() => onNavigate("mental")}>
+        <button className="shortcut-card" onClick={() => onNavigate("help")}>
           <div className="title">🌷 今日できたことを記録</div>
           <div className="desc">小さな進みも、記録すると見えてきます</div>
         </button>

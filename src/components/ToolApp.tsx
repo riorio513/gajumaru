@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import SideNav from "@/components/SideNav";
 import HomePanel from "@/components/panels/HomePanel";
 import ChecklistPanel from "@/components/panels/ChecklistPanel";
@@ -10,18 +11,20 @@ import TrackerPanel from "@/components/panels/TrackerPanel";
 import DiagnosisPanel from "@/components/panels/DiagnosisPanel";
 import GlossaryPanel from "@/components/panels/GlossaryPanel";
 import IdeaBankPanel from "@/components/panels/IdeaBankPanel";
-import MentalCarePanel from "@/components/panels/MentalCarePanel";
+import HelpInfoPanel from "@/components/panels/HelpInfoPanel";
 import GuestMigrationBanner from "@/components/GuestMigrationBanner";
 import { PANEL_LABELS, type PanelKey } from "@/lib/panels";
 
-export default function ToolApp({ userId }: { userId: string | null }) {
+export default function ToolApp({ userId, isAdmin }: { userId: string | null; isAdmin: boolean }) {
   const [active, setActive] = useState<PanelKey>("home");
 
   return (
     <>
       <header>
-        <div className="icon">🌳</div>
-        <h1>ガジュマル</h1>
+        <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <div className="icon">🌳</div>
+          <h1>ガジュマル</h1>
+        </Link>
         <p>IRIAM初配信までの「準備期間」に寄り添うノート</p>
       </header>
 
@@ -39,7 +42,7 @@ export default function ToolApp({ userId }: { userId: string | null }) {
         {active === "diagnosis" && <DiagnosisPanel />}
         {active === "glossary" && <GlossaryPanel />}
         {active === "ideabank" && <IdeaBankPanel userId={userId} />}
-        {active === "mental" && <MentalCarePanel userId={userId} />}
+        {active === "help" && <HelpInfoPanel userId={userId} isAdmin={isAdmin} />}
       </div>
 
       <footer>

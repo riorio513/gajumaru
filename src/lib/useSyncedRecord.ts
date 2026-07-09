@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-type ProfileColumn = "debut_date" | "checklist_state" | "profile_form" | "idea_bank";
+type ProfileColumn =
+  | "debut_date"
+  | "prep_start_date"
+  | "visit_goal"
+  | "checklist_state"
+  | "profile_form"
+  | "idea_bank";
 
 /**
  * ログイン中は gajumaru_profiles の指定カラムに同期し、
