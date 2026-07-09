@@ -283,6 +283,81 @@
     color:var(--text-sub);
     margin-top:30px;
   }
+
+  /* profile builder */
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .field-label{
+    font-size:.82rem;
+    font-weight:700;
+    color:var(--green-deep);
+  }
+  .field-label em{
+    color:var(--accent);
+    font-style:normal;
+    margin-left:2px;
+  }
+  .field input, .field select{
+    font-family:inherit;
+    font-size:.92rem;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#fafdfa;
+    color:var(--text);
+  }
+  .output-block{
+    margin-top:20px;
+  }
+  .output-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:.85rem;
+    font-weight:700;
+    color:var(--green-deep);
+    margin-bottom:8px;
+  }
+  .copy-btn{
+    font-family:inherit;
+    font-size:.76rem;
+    font-weight:700;
+    padding:5px 14px;
+    border-radius:999px;
+    border:1px solid var(--green-mid);
+    background:#fff;
+    color:var(--green-mid);
+    cursor:pointer;
+  }
+  .copy-btn:hover{background:var(--green-mid);color:#fff;}
+  .copy-btn.copied{background:var(--green-mid);color:#fff;}
+  .output-area{
+    width:100%;
+    font-family:inherit;
+    font-size:.88rem;
+    line-height:1.7;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:#fafdfa;
+    color:var(--text);
+    resize:vertical;
+  }
+  .char-count{
+    text-align:right;
+    font-size:.75rem;
+    color:var(--text-sub);
+    margin-top:4px;
+  }
 </style>
 </head>
 <body>
@@ -297,6 +372,7 @@
   <nav class="tabs">
     <button class="active" data-panel="checklist">準備チェックリスト</button>
     <button data-panel="calendar">デビュー日逆算カレンダー</button>
+    <button data-panel="profile">自己紹介文ビルダー</button>
   </nav>
 
   <section class="panel active" id="panel-checklist">
@@ -332,6 +408,73 @@
       <ul class="timeline" id="timelineOut"></ul>
       <div class="disclaimer">
         <b>おことわり：</b>ここに出てくる日数の目安（X運用開始・立ち絵発注・まいにち配信バッジ・バナーイベント等）はIRIAM公式の基準ではなく、事務所ブログや個人の体験談から見えてきたおおよその目安です。実際のイベント条件・仕様は公式FAQで必ず確認してください。無理のないペースを最優先にしてくださいね。
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-profile">
+    <div class="card">
+      <h2 class="section-title">✏️ 自己紹介文ビルダー</h2>
+      <p class="lead">項目を埋めるだけで、「プロフィール欄用の文章」と「初配信で話すトーク台本」を自動でつくります。そのままコピーして使ってください。</p>
+
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">呼んでほしい名前<em>*</em></span>
+          <input type="text" id="pf_name" placeholder="例）ののか">
+        </label>
+        <label class="field">
+          <span class="field-label">一言で自分を紹介すると？</span>
+          <input type="text" id="pf_catch" placeholder="例）お絵かき好きなのんびり配信者">
+        </label>
+        <label class="field">
+          <span class="field-label">好きなこと・趣味</span>
+          <input type="text" id="pf_likes" placeholder="例）ゲーム、お菓子作り、猫">
+        </label>
+        <label class="field">
+          <span class="field-label">配信で見てほしいところ・やりたいこと</span>
+          <input type="text" id="pf_content" placeholder="例）雑談やお絵かき配信を中心にやっていきたいです">
+        </label>
+        <label class="field">
+          <span class="field-label">配信予定（曜日・時間帯）</span>
+          <input type="text" id="pf_schedule" placeholder="例）平日21時ごろ〜、週2〜3回くらい">
+        </label>
+        <label class="field">
+          <span class="field-label">目標・意気込み（任意）</span>
+          <input type="text" id="pf_goal" placeholder="例）まずは毎日配信バッジを目指します">
+        </label>
+        <label class="field">
+          <span class="field-label">話し方のトーン</span>
+          <select id="pf_tone">
+            <option value="polite">丁寧め</option>
+            <option value="friendly" selected>フレンドリー</option>
+            <option value="calm">のんびり・マイペース</option>
+          </select>
+        </label>
+      </div>
+
+      <button class="btn" id="pfGenerateBtn" style="margin-top:6px;">文章をつくる</button>
+
+      <div id="pfResults" style="display:none;">
+        <div class="output-block">
+          <div class="output-head">
+            <span>📋 プロフィール欄用（IRIAMの最初の7行を意識）</span>
+            <button class="copy-btn" data-target="pfProfileOut">コピー</button>
+          </div>
+          <textarea id="pfProfileOut" class="output-area" rows="8" readonly></textarea>
+          <div class="char-count"><span id="pfProfileCount">0</span> / 1000文字</div>
+        </div>
+
+        <div class="output-block">
+          <div class="output-head">
+            <span>🎤 初配信トーク台本（話し言葉）</span>
+            <button class="copy-btn" data-target="pfTalkOut">コピー</button>
+          </div>
+          <textarea id="pfTalkOut" class="output-area" rows="10" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        入力した内容はこの端末（localStorage）に保存され、次回開いたときも残ります。生成される文章はテンプレートに沿ったものなので、自分らしい言い回しに調整して使ってくださいね。
       </div>
     </div>
   </section>
@@ -536,6 +679,100 @@ function buildTimeline(dateStr){
     ul.appendChild(li);
   });
 }
+
+// ---------- profile builder ----------
+const PF_FIELDS = ['pf_name','pf_catch','pf_likes','pf_content','pf_schedule','pf_goal','pf_tone'];
+const PF_KEY = 'gajumaru:profileForm:v1';
+
+function loadPfForm(){
+  try{ return JSON.parse(localStorage.getItem(PF_KEY)) || {}; }catch(e){ return {}; }
+}
+const pfSaved = loadPfForm();
+PF_FIELDS.forEach(id=>{
+  const el = document.getElementById(id);
+  if(pfSaved[id] !== undefined) el.value = pfSaved[id];
+  el.addEventListener('input', ()=>{
+    const data = loadPfForm();
+    data[id] = el.value;
+    localStorage.setItem(PF_KEY, JSON.stringify(data));
+  });
+});
+
+const PF_TONE_TEXT = {
+  polite: {
+    greet: n => `はじめまして、${n}と申します。`,
+    close: '至らないところも多いかと思いますが、どうぞよろしくお願いいたします。',
+    talkGreet: n => `皆さん、はじめまして。${n}と申します。`,
+    talkClose: 'まだまだ不慣れですが、少しずつ頑張っていきますので、どうぞよろしくお願いいたします。',
+  },
+  friendly: {
+    greet: n => `はじめまして！${n}です！`,
+    close: '仲良くしてもらえたら嬉しいです、よろしくね！',
+    talkGreet: n => `みなさん、はじめまして！${n}です！`,
+    talkClose: 'まだまだこれからだけど、みんなと楽しく配信していきたいので、よろしくお願いします！',
+  },
+  calm: {
+    greet: n => `はじめまして、${n}です。`,
+    close: 'マイペースにゆっくりやっていくので、のんびり見てもらえたら嬉しいです。',
+    talkGreet: n => `はじめまして……${n}です。`,
+    talkClose: '緊張しますが、マイペースに頑張っていきたいと思います。よろしくお願いします。',
+  },
+};
+
+document.getElementById('pfGenerateBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('pf_name').value.trim();
+  const catch_ = document.getElementById('pf_catch').value.trim();
+  const likes = document.getElementById('pf_likes').value.trim();
+  const content = document.getElementById('pf_content').value.trim();
+  const schedule = document.getElementById('pf_schedule').value.trim();
+  const goal = document.getElementById('pf_goal').value.trim();
+  const tone = document.getElementById('pf_tone').value;
+
+  if(!name){ alert('「呼んでほしい名前」を入力してください'); return; }
+
+  const T = PF_TONE_TEXT[tone];
+
+  // プロフィール文（最初の7行を意識した短め・改行区切り）
+  const profileLines = [];
+  profileLines.push(T.greet(name) + (catch_ ? `${catch_}です。` : ''));
+  if(likes) profileLines.push(`好きなもの：${likes}`);
+  if(content) profileLines.push(content);
+  if(schedule) profileLines.push(`配信予定：${schedule}`);
+  if(goal) profileLines.push(`目標：${goal}`);
+  profileLines.push(T.close);
+  const profileText = profileLines.join('\n');
+
+  // 初配信トーク台本（話し言葉でつなげる）
+  const talkParts = [];
+  talkParts.push(T.talkGreet(name));
+  if(catch_) talkParts.push(`${catch_}、というのが自分のことをひとことで言うとって感じです。`);
+  if(likes) talkParts.push(`好きなものは${likes}あたりで、配信でもその話をよくすると思います。`);
+  if(content) talkParts.push(content + '。');
+  if(schedule) talkParts.push(`配信は${schedule}を予定しています。よかったら覚えててもらえると嬉しいです。`);
+  if(goal) talkParts.push(goal + '。');
+  talkParts.push(T.talkClose);
+  const talkText = talkParts.join('\n\n');
+
+  document.getElementById('pfProfileOut').value = profileText;
+  document.getElementById('pfTalkOut').value = talkText;
+  document.getElementById('pfProfileCount').textContent = profileText.length;
+  document.getElementById('pfResults').style.display = 'block';
+});
+
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const target = document.getElementById(btn.dataset.target);
+    try{
+      await navigator.clipboard.writeText(target.value);
+    }catch(e){
+      target.select();
+      document.execCommand('copy');
+    }
+    btn.textContent = 'コピーしました';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 1500);
+  });
+});
 </script>
 </body>
 </html>
