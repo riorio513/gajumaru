@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ガジュマル｜IRIAM配信準備ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-deep:#3f6b4f;
+    --green-mid:#6ea87e;
+    --green-soft:#a9d4b3;
+    --cream:#fbf7ee;
+    --cream-card:#ffffff;
+    --accent:#e8a86b;
+    --text:#2f3f34;
+    --text-sub:#6b7b70;
+    --border:#e2ede4;
+    --shadow: 0 4px 16px rgba(63,107,79,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Zen Maru Gothic', sans-serif;
+    background:
+      radial-gradient(circle at 10% 0%, #eef6ec 0%, transparent 45%),
+      radial-gradient(circle at 90% 10%, #fdf3e4 0%, transparent 40%),
+      var(--cream);
+    color:var(--text);
+    line-height:1.7;
+    padding-bottom:60px;
+  }
+  header{
+    text-align:center;
+    padding:36px 16px 20px;
+  }
+  header .icon{font-size:2.4rem;}
+  header h1{
+    margin:6px 0 4px;
+    font-size:1.6rem;
+    font-weight:900;
+    color:var(--green-deep);
+    letter-spacing:.02em;
+  }
+  header p{
+    margin:0;
+    color:var(--text-sub);
+    font-size:.88rem;
+  }
+  .container{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 16px;
+  }
+  nav.tabs{
+    display:flex;
+    gap:8px;
+    margin:18px 0 22px;
+    background:var(--cream-card);
+    border-radius:999px;
+    padding:5px;
+    box-shadow:var(--shadow);
+  }
+  nav.tabs button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px 8px;
+    border-radius:999px;
+    font-family:inherit;
+    font-size:.86rem;
+    font-weight:700;
+    color:var(--text-sub);
+    cursor:pointer;
+    transition:.2s;
+  }
+  nav.tabs button.active{
+    background:var(--green-mid);
+    color:#fff;
+  }
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+
+  .card{
+    background:var(--cream-card);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin-bottom:18px;
+    border:1px solid var(--border);
+  }
+
+  /* progress */
+  .progress-wrap{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:4px;
+  }
+  .progress-ring{
+    position:relative;
+    width:64px;height:64px;flex:none;
+  }
+  .progress-ring svg{transform:rotate(-90deg);}
+  .progress-ring .pct{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;color:var(--green-deep);font-size:.95rem;
+  }
+  .progress-text{font-size:.85rem;color:var(--text-sub);}
+  .progress-text b{color:var(--green-deep);font-size:1.05rem;}
+
+  .cat{
+    margin-bottom:14px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .cat-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 16px;
+    background:#f3f9f4;
+    cursor:pointer;
+    user-select:none;
+  }
+  .cat-head:hover{background:#eaf5ec;}
+  .cat-head .title{
+    font-weight:700;
+    font-size:.95rem;
+    color:var(--green-deep);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .cat-head .badge{
+    font-size:.75rem;
+    color:var(--text-sub);
+    background:#fff;
+    border:1px solid var(--border);
+    padding:2px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .cat-head .arrow{
+    transition:transform .2s;
+    color:var(--green-mid);
+    font-size:.8rem;
+  }
+  .cat.open .arrow{transform:rotate(90deg);}
+  .cat-body{
+    display:none;
+    padding:6px 16px 14px;
+  }
+  .cat.open .cat-body{display:block;}
+
+  .task{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:10px 4px;
+    border-bottom:1px dashed var(--border);
+  }
+  .task:last-child{border-bottom:none;}
+  .task input[type=checkbox]{
+    margin-top:3px;
+    width:18px;height:18px;
+    accent-color:var(--green-mid);
+    flex:none;
+    cursor:pointer;
+  }
+  .task label{
+    font-size:.9rem;
+    cursor:pointer;
+  }
+  .task.done label .t{
+    text-decoration:line-through;
+    color:var(--text-sub);
+  }
+  .task .note{
+    display:block;
+    font-size:.78rem;
+    color:var(--text-sub);
+    margin-top:2px;
+  }
+  .task .note a{color:var(--green-mid);}
+
+  h2.section-title{
+    font-size:1.05rem;
+    color:var(--green-deep);
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .lead{
+    font-size:.85rem;
+    color:var(--text-sub);
+    margin:-4px 0 16px;
+  }
+
+  /* calendar */
+  .date-input-row{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  input[type=date]{
+    font-family:inherit;
+    font-size:.95rem;
+    padding:9px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#fafdfa;
+    color:var(--text);
+  }
+  .btn{
+    font-family:inherit;
+    font-size:.85rem;
+    font-weight:700;
+    padding:9px 18px;
+    border-radius:999px;
+    border:none;
+    background:var(--green-mid);
+    color:#fff;
+    cursor:pointer;
+  }
+  .btn:hover{background:var(--green-deep);}
+  .btn.secondary{
+    background:#fff;
+    color:var(--text-sub);
+    border:1px solid var(--border);
+  }
+
+  .timeline{list-style:none;margin:0;padding:0;}
+  .timeline li{
+    position:relative;
+    padding:10px 0 10px 26px;
+    border-left:2px solid var(--green-soft);
+    margin-left:6px;
+  }
+  .timeline li:last-child{border-left:2px solid transparent;}
+  .timeline li::before{
+    content:"";
+    position:absolute;
+    left:-7px;top:14px;
+    width:12px;height:12px;
+    border-radius:50%;
+    background:var(--green-mid);
+    border:2px solid #fff;
+    box-shadow:0 0 0 2px var(--green-soft);
+  }
+  .timeline li.past::before{background:#cfd8d2;box-shadow:0 0 0 2px #e7ece9;}
+  .timeline .when{
+    font-weight:700;
+    color:var(--green-deep);
+    font-size:.92rem;
+  }
+  .timeline .desc{
+    font-size:.82rem;
+    color:var(--text-sub);
+  }
+  .timeline li.past .when, .timeline li.past .desc{color:#9aa6a0;}
+
+  .disclaimer{
+    font-size:.76rem;
+    color:var(--text-sub);
+    background:#fdf6ea;
+    border:1px solid #f1e2c4;
+    border-radius:10px;
+    padding:10px 14px;
+    margin-top:16px;
+  }
+  .disclaimer b{color:var(--accent);}
+
+  footer{
+    text-align:center;
+    font-size:.75rem;
+    color:var(--text-sub);
+    margin-top:30px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="icon">🌳</div>
+  <h1>ガジュマル</h1>
+  <p>IRIAM初配信までの「準備期間」に寄り添うノート</p>
+</header>
+
+<div class="container">
+  <nav class="tabs">
+    <button class="active" data-panel="checklist">準備チェックリスト</button>
+    <button data-panel="calendar">デビュー日逆算カレンダー</button>
+  </nav>
+
+  <section class="panel active" id="panel-checklist">
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-ring">
+          <svg width="64" height="64">
+            <circle cx="32" cy="32" r="27" stroke="#e2ede4" stroke-width="7" fill="none"/>
+            <circle id="ringFg" cx="32" cy="32" r="27" stroke="#6ea87e" stroke-width="7" fill="none"
+              stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+          </svg>
+          <div class="pct" id="pctLabel">0%</div>
+        </div>
+        <div class="progress-text">
+          今の進み具合<br>
+          <span id="doneCount"><b>0</b> / 0 個</span> 終わってるよ
+        </div>
+      </div>
+    </div>
+
+    <div id="catList"></div>
+  </section>
+
+  <section class="panel" id="panel-calendar">
+    <div class="card">
+      <h2 class="section-title">📅 デビュー日から逆算</h2>
+      <p class="lead">デビュー予定日（まだ決まっていなければ「これくらいかな」でOK）を入れると、目安のスケジュールを組み立てます。</p>
+      <div class="date-input-row">
+        <input type="date" id="debutDate">
+        <button class="btn" id="calcBtn">逆算する</button>
+        <button class="btn secondary" id="clearBtn">クリア</button>
+      </div>
+      <ul class="timeline" id="timelineOut"></ul>
+      <div class="disclaimer">
+        <b>おことわり：</b>ここに出てくる日数の目安（X運用開始・立ち絵発注・まいにち配信バッジ・バナーイベント等）はIRIAM公式の基準ではなく、事務所ブログや個人の体験談から見えてきたおおよその目安です。実際のイベント条件・仕様は公式FAQで必ず確認してください。無理のないペースを最優先にしてくださいね。
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>ガジュマル ｜ データはすべてこの端末（localStorage）だけに保存されます。サーバーには送信されません。</footer>
+
+<script>
+// ---------- tabs ----------
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.panel).classList.add('active');
+  });
+});
+
+// ---------- checklist data ----------
+const CATEGORIES = [
+  { key:'name', title:'① 名前・キャラ設定', tasks:[
+    { t:'活動名の候補を書き出す（本名が出ない・呼びやすい名前）' },
+    { t:'IRIAMアプリ内検索で名前が被っていないか確認する' },
+    { t:'X・Instagramなど使いたいSNSのアカウント名が空いているか確認する', note:'Namechkなどの一括チェックサービスが便利' },
+    { t:'キャラのコンセプト・口調・好きなものなど設定を決める' },
+  ]},
+  { key:'avatar', title:'② 立ち絵・アバター準備', tasks:[
+    { t:'立ち絵をどう用意するか決める（自作／外注／事務所負担）' },
+    { t:'IRIAMの入稿規定を確認する（サイズ・dpi・背景透過・NG表現など）', note:'公式FAQのモデル入稿ガイドラインを参照' },
+    { t:'外注する場合は依頼文・発注要件をまとめる（サイズ・雰囲気・NG事項）' },
+    { t:'予算感を把握しておく（相場は数千円〜、こだわると数万円台になることも）' },
+  ]},
+  { key:'gear', title:'③ 配信環境・機材', tasks:[
+    { t:'使う端末がIRIAMの動作環境を満たしているか確認する', note:'iOS/Androidそれぞれの必須・推奨スペックを公式FAQで確認' },
+    { t:'マイク・イヤホンなど音声環境を決める（最初はスマホ内蔵でもOK）' },
+    { t:'配信に使うWi-Fi・通信環境を確認する' },
+    { t:'長時間配信に備えて給電しながら配信できるか確認する' },
+  ]},
+  { key:'genre', title:'④ 配信ジャンル・コンセプト決め', tasks:[
+    { t:'自分が得意なこと・話しやすいジャンルを書き出す' },
+    { t:'配信テーマ・企画の候補をいくつか用意する（雑談／歌枠／ASMR／企画配信 など）' },
+    { t:'ネタ切れ用のトークネタストックを作っておく' },
+  ]},
+  { key:'app', title:'⑤ IRIAMアプリの理解', tasks:[
+    { t:'ギフト・スター・ダイヤ・応援ポイントなど基本用語を確認する' },
+    { t:'まいにち配信バッジの条件を確認する（30分以上を7日連続、途切れると取り消しなど）' },
+    { t:'初心者向け配信・ウェルカムパスなど初期の制度を確認する' },
+  ]},
+  { key:'schedule', title:'⑥ スケジュール・継続計画', tasks:[
+    { t:'デビュー日を決める（「デビュー日逆算カレンダー」タブで目安を確認）' },
+    { t:'無理のない配信頻度・時間帯を決める' },
+    { t:'仕事や生活との両立プランを考えておく' },
+  ]},
+  { key:'community', title:'⑦ リスナー・コミュニティ形成', tasks:[
+    { t:'枠周り（他のライバーの配信への挨拶）の進め方を考える' },
+    { t:'X運用の方針を決める（投稿頻度、リプライ・絡み方など）' },
+    { t:'ファンサーバー（Discordなど）を作るか検討する' },
+  ]},
+  { key:'talk', title:'⑧ トーク・配信内容準備', tasks:[
+    { t:'自己紹介の内容を決める（挨拶／名前／好きなこと／目標／締め）' },
+    { t:'入室・退室時のあいさつパターンを用意する' },
+    { t:'初配信の台本・進行メモを作る' },
+  ]},
+  { key:'mental', title:'⑨ メンタル・自信づくり', tasks:[
+    { t:'「準備期間はしんどくて当たり前」ということを知っておく' },
+    { t:'相談できる相手（事務所・同期・友人など）を確保しておく' },
+    { t:'できたこと・小さな達成を記録する習慣を作る' },
+  ]},
+  { key:'agency', title:'⑩ 事務所所属 or 個人勢の判断', tasks:[
+    { t:'事務所所属と個人勢、それぞれのメリット・デメリットを比較する' },
+    { t:'事務所を検討するなら還元率・立ち絵費用負担・ノルマ・契約期間を確認する' },
+    { t:'個人勢なら準備・宣伝・ファン集めを自分で行う覚悟を確認する' },
+  ]},
+  { key:'misc', title:'⑪ その他の準備タスク', tasks:[
+    { t:'プロフィール文を書く（最初の7行が特に大事）' },
+    { t:'アイコン・ヘッダー画像を用意する' },
+    { t:'配信サムネイルを用意する' },
+    { t:'初配信の告知文を用意する' },
+    { t:'初配信特典を考える（任意）' },
+  ]},
+];
+
+const STORE_KEY = 'gajumaru:checklist:v1';
+function loadState(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveState(state){
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+let state = loadState();
+
+const OPEN_KEY = 'gajumaru:openCats:v1';
+function loadOpen(){
+  try{ return JSON.parse(localStorage.getItem(OPEN_KEY)) || {}; }catch(e){ return {}; }
+}
+let openState = loadOpen();
+
+function taskId(catKey, idx){ return catKey+'_'+idx; }
+
+function render(){
+  const list = document.getElementById('catList');
+  list.innerHTML = '';
+  let total = 0, done = 0;
+
+  CATEGORIES.forEach(cat=>{
+    const catDone = cat.tasks.filter((_,i)=> state[taskId(cat.key,i)]).length;
+    total += cat.tasks.length;
+    done += catDone;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'cat' + (openState[cat.key] ? ' open':'');
+
+    const head = document.createElement('div');
+    head.className = 'cat-head';
+    head.innerHTML = `<span class="title"><span class="arrow">▶</span>${cat.title}</span><span class="badge">${catDone}/${cat.tasks.length}</span>`;
+    head.addEventListener('click', ()=>{
+      wrap.classList.toggle('open');
+      openState[cat.key] = wrap.classList.contains('open');
+      localStorage.setItem(OPEN_KEY, JSON.stringify(openState));
+    });
+
+    const body = document.createElement('div');
+    body.className = 'cat-body';
+    cat.tasks.forEach((task, i)=>{
+      const id = taskId(cat.key, i);
+      const isDone = !!state[id];
+      const row = document.createElement('div');
+      row.className = 'task' + (isDone ? ' done':'');
+      row.innerHTML = `
+        <input type="checkbox" id="chk_${id}" ${isDone?'checked':''}>
+        <label for="chk_${id}"><span class="t">${task.t}</span>${task.note ? `<span class="note">${task.note}</span>`:''}</label>
+      `;
+      row.querySelector('input').addEventListener('change', (e)=>{
+        state[id] = e.target.checked;
+        saveState(state);
+        render();
+      });
+      body.appendChild(row);
+    });
+
+    wrap.appendChild(head);
+    wrap.appendChild(body);
+    list.appendChild(wrap);
+  });
+
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('pctLabel').textContent = pct + '%';
+  document.getElementById('doneCount').innerHTML = `<b>${done}</b> / ${total} 個`;
+  const circumference = 169.6;
+  const offset = circumference - (circumference * pct / 100);
+  document.getElementById('ringFg').style.strokeDashoffset = offset;
+}
+render();
+
+// ---------- debut date calendar ----------
+const DEBUT_KEY = 'gajumaru:debutDate:v1';
+const savedDate = localStorage.getItem(DEBUT_KEY);
+if(savedDate){
+  document.getElementById('debutDate').value = savedDate;
+  buildTimeline(savedDate);
+}
+
+document.getElementById('calcBtn').addEventListener('click', ()=>{
+  const val = document.getElementById('debutDate').value;
+  if(!val){ alert('デビュー予定日を選んでください'); return; }
+  localStorage.setItem(DEBUT_KEY, val);
+  buildTimeline(val);
+});
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  localStorage.removeItem(DEBUT_KEY);
+  document.getElementById('debutDate').value = '';
+  document.getElementById('timelineOut').innerHTML = '';
+});
+
+function addDays(date, days){
+  const d = new Date(date);
+  d.setDate(d.getDate()+days);
+  return d;
+}
+function fmt(d){
+  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+}
+function buildTimeline(dateStr){
+  const debut = new Date(dateStr+'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const items = [
+    { d: addDays(debut,-30), label:'立ち絵の依頼・準備を始める目安', desc:'外注の場合は納期がかかるため早めの着手が安心' },
+    { d: addDays(debut,-14), label:'X運用スタートの目安', desc:'投稿を習慣化し、デビュー告知の下地を作る期間' },
+    { d: addDays(debut,-7),  label:'配信環境の最終チェック', desc:'機材・通信・動作確認、初配信の台本づくり' },
+    { d: debut,              label:'🎉 初配信（デビュー日）', desc:'ここがスタートライン' },
+    { d: addDays(debut,6),   label:'まいにち配信バッジ 達成目安', desc:'30分以上の配信を7日連続できた場合（途切れると取消なので無理のないペースで）' },
+    { d: addDays(debut,30),  label:'バナーイベント（バナイベ） 目安', desc:'デビューからおおよそ1ヶ月後に実施されることが多いとされる時期（事務所・時期により変動）' },
+  ];
+
+  const ul = document.getElementById('timelineOut');
+  ul.innerHTML = '';
+  items.forEach(item=>{
+    const li = document.createElement('li');
+    if(item.d < today) li.className = 'past';
+    li.innerHTML = `<div class="when">${fmt(item.d)}　${item.label}</div><div class="desc">${item.desc}</div>`;
+    ul.appendChild(li);
+  });
+}
+</script>
+</body>
+</html>
