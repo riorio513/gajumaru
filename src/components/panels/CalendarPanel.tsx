@@ -59,12 +59,41 @@ function getBanivPeriod(debut: Date) {
   return { week, start, end };
 }
 
+// spanDaysがRUSHED_THRESHOLD_DAYS未満の場合、各項目のdescを
+// descShort（時間が少ない前提の言い回し）に差し替える
+const RUSHED_THRESHOLD_DAYS = 14;
+
 const MILESTONES = [
-  { ratio: 0, label: "🌱 準備スタート", desc: "ここが準備期間のはじまりです" },
-  { ratio: 0.15, label: "立ち絵の依頼・準備を始める目安", desc: "外注の場合は納期がかかるため早めの着手が安心" },
-  { ratio: 0.45, label: "自己紹介文・初配信トーク台本づくり", desc: "「自己紹介文ビルダー」タブで下書きしておくと安心" },
-  { ratio: 0.65, label: "X運用スタートの目安", desc: "投稿を習慣化し、デビュー告知の下地を作る期間" },
-  { ratio: 0.9, label: "配信環境の最終チェック", desc: "機材・通信・動作確認をしておく時期" },
+  {
+    ratio: 0,
+    label: "🌱 準備スタート",
+    desc: "ここが準備期間のはじまりです",
+    descShort: "ここが準備期間のはじまりです",
+  },
+  {
+    ratio: 0.15,
+    label: "立ち絵の依頼・準備を始める目安",
+    desc: "外注の場合は納期がかかるため早めの着手が安心",
+    descShort: "時間が限られているので、無理に外注せず、今ある素材やシンプルな見た目でも大丈夫です",
+  },
+  {
+    ratio: 0.45,
+    label: "自己紹介文・初配信トーク台本づくり",
+    desc: "「自己紹介文ビルダー」タブで下書きしておくと安心",
+    descShort: "凝った台本を作る時間がなければ、「自己紹介文ビルダー」で最低限の一言だけでも用意しておきましょう",
+  },
+  {
+    ratio: 0.65,
+    label: "X運用スタートの目安",
+    desc: "投稿を習慣化し、デビュー告知の下地を作る期間",
+    descShort: "今からアカウントを作るだけでも十分です。無理に投稿実績を積もうとしなくて大丈夫",
+  },
+  {
+    ratio: 0.9,
+    label: "配信環境の最終チェック",
+    desc: "機材・通信・動作確認をしておく時期",
+    descShort: "最低限、音声と通信が安定して届くかだけは確認しておきましょう",
+  },
 ];
 
 export default function CalendarPanel({ userId }: { userId: string | null }) {
@@ -94,13 +123,17 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
 
   const banivPeriod = debut ? getBanivPeriod(debut) : null;
 
+  const spanDays =
+    start && debut && !invalidRange ? Math.round((debut.getTime() - start.getTime()) / 86400000) : null;
+  const isRushed = spanDays !== null && spanDays < RUSHED_THRESHOLD_DAYS;
+
   const items =
     start && debut && !invalidRange
       ? [
           ...MILESTONES.map((m) => ({
             d: addByRatio(start, debut, m.ratio),
             label: m.label,
-            desc: m.desc,
+            desc: isRushed ? m.descShort : m.desc,
           })),
           { d: debut, label: "🎉 初配信（デビュー日）", desc: "ここがスタートライン" },
           {
@@ -148,6 +181,13 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
       {invalidRange && (
         <div className="empty-note" style={{ marginTop: 12 }}>
           デビュー予定日は準備開始日より後の日付にしてください。
+        </div>
+      )}
+
+      {isRushed && (
+        <div className="empty-note" style={{ marginTop: 12 }}>
+          {spanDays !== null && spanDays <= 3 ? "🚨" : "⏱️"}{" "}
+          準備期間があと{spanDays}日と短めです。無理に全部をこなす必要はありません。優先順位をつけて、できる範囲で進めましょう（下の説明文も短い準備期間向けの内容に変えています）。
         </div>
       )}
 
