@@ -7,6 +7,7 @@ export type PanelKey =
   | "diagnosis"
   | "glossary"
   | "ideabank"
+  | "quadsplit"
   | "help";
 
 export const PANEL_LABELS: Record<PanelKey, string> = {
@@ -18,6 +19,7 @@ export const PANEL_LABELS: Record<PanelKey, string> = {
   diagnosis: "機材・ジャンル診断",
   glossary: "IRIAM用語集",
   ideabank: "配信ネタ帳",
+  quadsplit: "四分割画像作成",
   help: "お役立ち情報",
 };
 
@@ -32,6 +34,7 @@ export const HELP_GROUP_ORDER: PanelKey[] = [
   "diagnosis",
   "glossary",
   "ideabank",
+  "quadsplit",
   "help",
 ];
 

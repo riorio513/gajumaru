@@ -449,6 +449,40 @@ footer{
   margin-top:4px;
 }
 
+/* quad split */
+.quad-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:16px;
+}
+.quad-cell{
+  background:#f3f9f4;
+  border-radius:14px;
+  padding:10px;
+  text-align:center;
+}
+.quad-cell img{
+  width:100%;
+  max-height:160px;
+  object-fit:contain;
+  border-radius:10px;
+  background:#fff;
+  border:1px solid var(--border);
+}
+.quad-label{
+  font-size:.75rem;
+  color:var(--text-sub);
+  font-weight:700;
+  margin:8px 0;
+}
+.quad-cell .btn.secondary{
+  display:inline-block;
+  text-decoration:none;
+  font-size:.8rem;
+  padding:8px 14px;
+}
+
 /* tracker */
 .stat-row{
   display:flex;

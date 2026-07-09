@@ -11,6 +11,7 @@ import TrackerPanel from "@/components/panels/TrackerPanel";
 import DiagnosisPanel from "@/components/panels/DiagnosisPanel";
 import GlossaryPanel from "@/components/panels/GlossaryPanel";
 import IdeaBankPanel from "@/components/panels/IdeaBankPanel";
+import QuadSplitPanel from "@/components/panels/QuadSplitPanel";
 import HelpInfoPanel from "@/components/panels/HelpInfoPanel";
 import GuestMigrationBanner from "@/components/GuestMigrationBanner";
 import { PANEL_LABELS, type PanelKey } from "@/lib/panels";
@@ -42,6 +43,7 @@ export default function ToolApp({ userId, isAdmin }: { userId: string | null; is
         {active === "diagnosis" && <DiagnosisPanel />}
         {active === "glossary" && <GlossaryPanel />}
         {active === "ideabank" && <IdeaBankPanel userId={userId} />}
+        {active === "quadsplit" && <QuadSplitPanel />}
         {active === "help" && <HelpInfoPanel userId={userId} isAdmin={isAdmin} />}
       </div>
 
