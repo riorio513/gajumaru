@@ -1,29 +1,26 @@
 # ガジュマル｜IRIAM配信準備ノート
 
-IRIAM初配信前の「準備期間」を過ごすライバーのための非AI・無料の支援ツール。
+IRIAM初配信前の「準備期間」を過ごすライバーのための無料ツール。ログインは任意（ゲストでも使えるが、ログインすると端末間でデータが引き継がれる）。
 
-- 1ファイル（`index.html`）で動く静的ページ。インストール不要、ログイン不要。
-- データ（チェックリストの進捗・デビュー予定日）はブラウザ内（localStorage）に保存され、サーバーには送信されません。
-- GitHub Pages で無料公開。
+- Next.js 16 (App Router, TypeScript) + Supabase (Auth / Postgres)
+- ログイン任意: 未ログイン時はブラウザのlocalStorageに保存、ログイン時はSupabaseに同期
+- 本番: Vercel（`main`へのpushで自動デプロイ）
 
-## 収録機能（MVP）
+## ローカル開発
 
-1. **準備チェックリスト** — 11カテゴリ・38項目（名前・立ち絵・機材・ジャンル・アプリ理解・スケジュール・コミュニティ・トーク準備・メンタル・事務所判断・その他）。進捗率を円グラフで表示。
-2. **デビュー日逆算カレンダー** — デビュー予定日を入れると、立ち絵依頼・X運用開始・まいにち配信バッジ・バナーイベントなどの目安スケジュールを逆算表示。
-
-「まいにち配信バッジ」「バナーイベント」等の日数目安はIRIAM公式の基準ではなく、事務所ブログや体験談から見えてきたおおよその目安です（アプリ内に非公式であることを明記）。
-
-## ローカルでの確認
-
-Node/Python不要。PowerShellの簡易サーバーで確認できます。
+Node.jsはPATHに無いため、`.claude/launch.json`の`gajumaru`設定（`env.PATH`オーバーライド）経由でClaude Previewから起動するか、以下を直接実行:
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -File serve.ps1 -Port 4180
+"C:\Program Files\nodejs\npm.cmd" run dev
 ```
 
-ブラウザで `http://localhost:4180/` を開く。
+環境変数は`.env.local`（gitignore対象）に設定:
 
-## 今後の予定
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
-- 第2段階: 自己紹介/プロフィール文ビルダー、名前重複・SNSハンドル空きチェックの支援
-- 第3段階: 継続トラッカー（配信時間・まいにち配信ストリーク・枠周り記録）、機材・ジャンルの非AI診断
+## DBマイグレーション
+
+`supabase/migrations/*.sql`はVercelデプロイでは自動適用されない。SupabaseダッシュボードのSQL Editorで手動実行すること。
