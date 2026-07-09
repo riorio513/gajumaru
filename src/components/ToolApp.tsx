@@ -3,7 +3,14 @@
 import { useState } from "react";
 import SideNav from "@/components/SideNav";
 import HomePanel from "@/components/panels/HomePanel";
-import ComingSoonPanel from "@/components/panels/ComingSoonPanel";
+import ChecklistPanel from "@/components/panels/ChecklistPanel";
+import CalendarPanel from "@/components/panels/CalendarPanel";
+import ProfileBuilderPanel from "@/components/panels/ProfileBuilderPanel";
+import TrackerPanel from "@/components/panels/TrackerPanel";
+import DiagnosisPanel from "@/components/panels/DiagnosisPanel";
+import GlossaryPanel from "@/components/panels/GlossaryPanel";
+import IdeaBankPanel from "@/components/panels/IdeaBankPanel";
+import MentalCarePanel from "@/components/panels/MentalCarePanel";
 import { PANEL_LABELS, type PanelKey } from "@/lib/panels";
 
 export default function ToolApp({ userId }: { userId: string | null }) {
@@ -22,15 +29,15 @@ export default function ToolApp({ userId }: { userId: string | null }) {
       <div className="container">
         <div className="current-panel-label">{PANEL_LABELS[active]}</div>
 
-        {active === "home" && <HomePanel onNavigate={setActive} />}
-        {active === "checklist" && <ComingSoonPanel title="✅ 準備チェックリスト" />}
-        {active === "calendar" && <ComingSoonPanel title="📅 デビュー日逆算カレンダー" />}
-        {active === "profile" && <ComingSoonPanel title="✏️ 自己紹介文ビルダー" />}
-        {active === "tracker" && <ComingSoonPanel title="📈 継続トラッカー" />}
-        {active === "diagnosis" && <ComingSoonPanel title="🎛️ 機材・ジャンル診断" />}
-        {active === "glossary" && <ComingSoonPanel title="📖 IRIAM用語集" />}
-        {active === "ideabank" && <ComingSoonPanel title="💡 配信ネタ帳" />}
-        {active === "mental" && <ComingSoonPanel title="🌷 メンタルケア" />}
+        {active === "home" && <HomePanel userId={userId} onNavigate={setActive} />}
+        {active === "checklist" && <ChecklistPanel userId={userId} />}
+        {active === "calendar" && <CalendarPanel userId={userId} />}
+        {active === "profile" && <ProfileBuilderPanel userId={userId} />}
+        {active === "tracker" && <TrackerPanel userId={userId} />}
+        {active === "diagnosis" && <DiagnosisPanel />}
+        {active === "glossary" && <GlossaryPanel />}
+        {active === "ideabank" && <IdeaBankPanel userId={userId} />}
+        {active === "mental" && <MentalCarePanel userId={userId} />}
       </div>
 
       <footer>

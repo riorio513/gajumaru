@@ -1,15 +1,29 @@
+import { useSyncedRecord } from "@/lib/useSyncedRecord";
+import { CHECKLIST_CATEGORIES } from "@/lib/checklistData";
 import type { PanelKey } from "@/lib/panels";
 
 export default function HomePanel({
+  userId,
   onNavigate,
 }: {
+  userId: string | null;
   onNavigate: (panel: PanelKey) => void;
 }) {
+  const [checklist] = useSyncedRecord<Record<string, boolean>>(
+    userId,
+    "checklist_state",
+    "gajumaru:checklist:v1",
+    {}
+  );
+  const total = CHECKLIST_CATEGORIES.reduce((s, c) => s + c.tasks.length, 0);
+  const done = Object.values(checklist).filter(Boolean).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
   return (
     <div className="card">
       <p className="greeting">おかえりなさい 🌳</p>
       <p className="lead" style={{ marginTop: 0 }}>
-        今日はどれから続けますか？
+        準備チェックリストの進み具合：<b>{pct}%</b>（{done}/{total}）
       </p>
       <div className="shortcut-grid">
         <button className="shortcut-card" onClick={() => onNavigate("checklist")}>
