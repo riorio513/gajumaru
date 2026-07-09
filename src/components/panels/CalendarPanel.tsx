@@ -14,9 +14,49 @@ function addByRatio(start: Date, end: Date, ratio: number) {
 function fmt(d: Date) {
   return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
 }
+const DOW = ["日", "月", "火", "水", "木", "金", "土"];
+function fmtWithDow(d: Date) {
+  return `${fmt(d)}(${DOW[d.getDay()]})`;
+}
 function todayISO() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// バナーイベント（バナイベ）の参加週は、IRIAM公式FAQにより「初配信日時」の
+// 月内の日付レンジで決まる（4:00が日付の区切り）。月の日数によって区切りが変わる。
+function getBanivWeek(date: Date): 1 | 2 | 3 | 4 {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let breakpoints: [number, number, number];
+  if (daysInMonth === 31) breakpoints = [8, 16, 24];
+  else if (daysInMonth === 30) breakpoints = [8, 16, 23];
+  else if (daysInMonth === 29) breakpoints = [8, 15, 22];
+  else breakpoints = [7, 14, 21]; // 28日の2月
+  if (day <= breakpoints[0]) return 1;
+  if (day <= breakpoints[1]) return 2;
+  if (day <= breakpoints[2]) return 3;
+  return 4;
+}
+function firstTuesdayOfMonth(year: number, month: number) {
+  const d = new Date(year, month, 1);
+  const diff = (2 - d.getDay() + 7) % 7;
+  d.setDate(1 + diff);
+  return d;
+}
+function getBanivPeriod(debut: Date) {
+  const week = getBanivWeek(debut);
+  let targetYear = debut.getFullYear();
+  let targetMonth = debut.getMonth() + 1;
+  if (targetMonth > 11) {
+    targetMonth = 0;
+    targetYear += 1;
+  }
+  const start = addDays(firstTuesdayOfMonth(targetYear, targetMonth), (week - 1) * 7);
+  const end = addDays(start, 6);
+  return { week, start, end };
 }
 
 const MILESTONES = [
@@ -52,6 +92,8 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
   const debut = debutDate ? new Date(debutDate + "T00:00:00") : null;
   const invalidRange = !!(start && debut && debut.getTime() <= start.getTime());
 
+  const banivPeriod = debut ? getBanivPeriod(debut) : null;
+
   const items =
     start && debut && !invalidRange
       ? [
@@ -66,11 +108,15 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
             label: "まいにち配信バッジ 達成目安",
             desc: "30分以上の配信を7日連続できた場合（途切れると取消なので無理のないペースで）",
           },
-          {
-            d: addDays(debut, 30),
-            label: "バナーイベント（バナイベ） 目安",
-            desc: "デビューからおおよそ1ヶ月後に実施されることが多いとされる時期（事務所・時期により変動）",
-          },
+          ...(banivPeriod
+            ? [
+                {
+                  d: banivPeriod.start,
+                  label: `🎪 バナーイベント参加週（翌月${banivPeriod.week}週目）`,
+                  desc: `${fmtWithDow(banivPeriod.start)}19:00 〜 ${fmtWithDow(banivPeriod.end)}23:59 が参加対象の見込みです`,
+                },
+              ]
+            : []),
         ]
       : [];
 
@@ -118,7 +164,7 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
         </ul>
       )}
       <div className="disclaimer">
-        <b>おことわり：</b>ここに出てくる日数の目安（X運用開始・立ち絵発注・まいにち配信バッジ・バナイベ等）はIRIAM公式の基準ではなく、事務所ブログや個人の体験談から見えてきたおおよその目安です。実際のイベント条件・仕様は公式FAQで必ず確認してください。無理のないペースを最優先にしてくださいね。
+        <b>おことわり：</b>X運用開始・立ち絵発注・まいにち配信バッジの目安はIRIAM公式の基準ではなく、事務所ブログや個人の体験談から見えてきたおおよその目安です。バナーイベント参加週は公式FAQの「初配信日時で決まる」ルールをもとに計算していますが、①1日の区切りは4:00のため配信開始時刻によっては前後の週になる場合がある、②その月に火曜日が5回ある場合は日程調整が入り表示とずれる場合がある、という点にご注意ください。実際のイベント条件・仕様は必ず公式FAQでご確認ください。無理のないペースを最優先にしてくださいね。
       </div>
     </div>
   );
