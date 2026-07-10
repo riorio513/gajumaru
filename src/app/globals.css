@@ -209,16 +209,16 @@ section.panel.active{display:block;}
 .progress-text b{color:var(--green-deep);font-size:1.05rem;}
 
 .cat{
-  margin-bottom:14px;
+  margin-bottom:8px;
   border:1px solid var(--border);
-  border-radius:14px;
+  border-radius:12px;
   overflow:hidden;
 }
 .cat-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:13px 16px;
+  padding:10px 14px;
   background:#f3f9f4;
   cursor:pointer;
   user-select:none;
@@ -226,51 +226,51 @@ section.panel.active{display:block;}
 .cat-head:hover{background:#eaf5ec;}
 .cat-head .title{
   font-weight:700;
-  font-size:.95rem;
+  font-size:.86rem;
   color:var(--green-deep);
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:7px;
 }
 .cat-head .badge{
-  font-size:.75rem;
+  font-size:.7rem;
   color:var(--text-sub);
   background:#fff;
   border:1px solid var(--border);
-  padding:2px 9px;
+  padding:1px 8px;
   border-radius:999px;
   white-space:nowrap;
 }
 .cat-head .arrow{
   transition:transform .2s;
   color:var(--green-mid);
-  font-size:.8rem;
+  font-size:.75rem;
   display:inline-block;
 }
 .cat.open .arrow{transform:rotate(90deg);}
 .cat-body{
   display:none;
-  padding:6px 16px 14px;
+  padding:2px 14px 8px;
 }
 .cat.open .cat-body{display:block;}
 
 .task{
   display:flex;
   align-items:flex-start;
-  gap:10px;
-  padding:10px 4px;
+  gap:9px;
+  padding:7px 4px;
   border-bottom:1px dashed var(--border);
 }
 .task:last-child{border-bottom:none;}
 .task input[type=checkbox]{
-  margin-top:3px;
-  width:18px;height:18px;
+  margin-top:2px;
+  width:17px;height:17px;
   accent-color:var(--green-mid);
   flex:none;
   cursor:pointer;
 }
 .task label{
-  font-size:.9rem;
+  font-size:.85rem;
   cursor:pointer;
 }
 .task.done label .t{
@@ -279,11 +279,29 @@ section.panel.active{display:block;}
 }
 .task .note{
   display:block;
-  font-size:.78rem;
+  font-size:.74rem;
   color:var(--text-sub);
-  margin-top:2px;
+  margin-top:1px;
 }
 .task .note a{color:var(--green-mid);}
+
+.checklist-toolbar{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin:-6px 0 10px;
+}
+.checklist-toolbar button{
+  font-family:inherit;
+  font-size:.74rem;
+  font-weight:700;
+  color:var(--text-sub);
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:2px 4px;
+}
+.checklist-toolbar button:hover{color:var(--green-deep);}
 
 h2.section-title{
   font-size:1.05rem;

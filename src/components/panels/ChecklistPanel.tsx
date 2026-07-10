@@ -27,6 +27,14 @@ export default function ChecklistPanel({ userId }: { userId: string | null }) {
     setOpenCats((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
+  function expandAll() {
+    setOpenCats(Object.fromEntries(CHECKLIST_CATEGORIES.map((c) => [c.key, true])));
+  }
+
+  function collapseAll() {
+    setOpenCats({});
+  }
+
   const total = CHECKLIST_CATEGORIES.reduce((s, c) => s + c.tasks.length, 0);
   const done = Object.values(state).filter(Boolean).length;
   const pct = total ? Math.round((done / total) * 100) : 0;
@@ -60,6 +68,11 @@ export default function ChecklistPanel({ userId }: { userId: string | null }) {
             <b>{done}</b> / {total} 個 終わってるよ
           </div>
         </div>
+      </div>
+
+      <div className="checklist-toolbar">
+        <button onClick={expandAll}>すべて開く</button>
+        <button onClick={collapseAll}>すべて閉じる</button>
       </div>
 
       {CHECKLIST_CATEGORIES.map((cat) => {
