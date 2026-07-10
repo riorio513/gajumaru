@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSyncedList } from "@/lib/useSyncedList";
 import { useSyncedRecord } from "@/lib/useSyncedRecord";
+import GuestLockButton from "@/components/GuestLockButton";
 
 type VisitLog = { id: string; log_date: string; name: string; note: string | null };
 
@@ -44,6 +45,7 @@ const GREETING_TEMPLATES = [
 ];
 
 export default function TrackerPanel({ userId }: { userId: string | null }) {
+  const isGuest = !userId;
   const visits = useSyncedList<VisitLog>(userId, "gajumaru_visit_logs", "gajumaru:visitLogs:v1", "log_date");
   const [visitGoal, setVisitGoal] = useSyncedRecord<number | null>(userId, "visit_goal", "gajumaru:visitGoal:v1", null);
 
@@ -99,7 +101,11 @@ export default function TrackerPanel({ userId }: { userId: string | null }) {
             placeholder={visitGoal ? `現在：週${visitGoal}回` : "週の目標回数"}
             style={{ width: 150 }}
           />
-          <button className="btn secondary" onClick={saveGoal}>目標を設定</button>
+          {isGuest ? (
+            <GuestLockButton className="btn secondary" />
+          ) : (
+            <button className="btn secondary" onClick={saveGoal}>目標を設定</button>
+          )}
         </div>
       </div>
 
@@ -111,7 +117,11 @@ export default function TrackerPanel({ userId }: { userId: string | null }) {
           <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)} />
           <input type="text" value={visitName} onChange={(e) => setVisitName(e.target.value)} placeholder="相手のライバー名" style={{ flex: 1, minWidth: 140 }} />
           <input type="text" value={visitNote} onChange={(e) => setVisitNote(e.target.value)} placeholder="メモ（任意）" style={{ flex: 1, minWidth: 140 }} />
-          <button className="btn" onClick={addVisit}>記録する</button>
+          {isGuest ? (
+            <GuestLockButton />
+          ) : (
+            <button className="btn" onClick={addVisit}>記録する</button>
+          )}
         </div>
         <div className="record-list">
           {sortedVisits.length === 0 ? (

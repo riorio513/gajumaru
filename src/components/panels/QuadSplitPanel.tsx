@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import GuestLockButton from "@/components/GuestLockButton";
 
 type PanelKey = "topleft" | "topright" | "bottomleft" | "bottomright";
 type BlockKey = "top" | "bottom";
@@ -90,7 +91,8 @@ function PixelNote() {
   );
 }
 
-export default function QuadSplitPanel() {
+export default function QuadSplitPanel({ userId }: { userId: string | null }) {
+  const isGuest = !userId;
   const [stage, setStage] = useState<"start" | number | "generating" | "done">("start");
   const [baseEntry, setBaseEntry] = useState<ImageEntry | null>(null);
   const [blocks, setBlocks] = useState<Partial<Record<PanelKey, Partial<Record<BlockKey, ImageEntry>>>>>({});
@@ -201,9 +203,13 @@ export default function QuadSplitPanel() {
         <p className="lead">
           タイムラインで1枚に結合して見える中央イラストと、各パネルの上部・下部に載せる告知情報を順に添付していきます。4枚そろったら自動で合成し、投稿できる形にまとめます。画像はこの端末の中だけで扱われ、サーバーには送信・保存されません。
         </p>
-        <button className="btn" onClick={() => setStage(0)}>
-          作成する
-        </button>
+        {isGuest ? (
+          <GuestLockButton />
+        ) : (
+          <button className="btn" onClick={() => setStage(0)}>
+            作成する
+          </button>
+        )}
         <PixelNote />
       </div>
     );

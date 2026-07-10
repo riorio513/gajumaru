@@ -91,7 +91,7 @@ const MILESTONES = [
     ratio: 0.15,
     label: "立ち絵の依頼・準備を始める目安",
     desc: "外注の場合は納期がかかるため早めの着手が安心",
-    descShort: "時間が限られているので、無理に外注せず、今ある素材やシンプルな見た目でも大丈夫です",
+    descShort: "時間が限られているため、外注を焦るより、デビュー日を見直すか、ラジオ配信から始めることが推奨されます",
   },
   {
     ratio: 0.3,
@@ -182,7 +182,7 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
     <div className="card">
       <h2 className="section-title">🚀 準備ロードマップ</h2>
       <p className="lead">
-        準備を始めた日（今日でOK）と、デビュー予定日（まだ決まっていなければ「これくらいかな」でOK）の両方を入れると、その間を埋めるロードマップを作ります。
+        準備開始日と、デビュー予定日（決まっていないときは「大体このくらい」の目安でOK）を入力することで、その間に必要な準備のロードマップを作成します。
       </p>
       <div className="date-input-row" style={{ marginBottom: 8 }}>
         <label style={{ fontSize: ".82rem", color: "var(--text-sub)", minWidth: 100 }}>準備開始日</label>

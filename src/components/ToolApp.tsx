@@ -43,7 +43,7 @@ export default function ToolApp({ userId, isAdmin }: { userId: string | null; is
         {active === "diagnosis" && <DiagnosisPanel />}
         {active === "glossary" && <GlossaryPanel />}
         {active === "ideabank" && <IdeaBankPanel userId={userId} />}
-        {active === "quadsplit" && <QuadSplitPanel />}
+        {active === "quadsplit" && <QuadSplitPanel userId={userId} />}
         {active === "help" && <HelpInfoPanel userId={userId} isAdmin={isAdmin} />}
       </div>
 

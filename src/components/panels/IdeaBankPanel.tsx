@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSyncedRecord } from "@/lib/useSyncedRecord";
+import GuestLockButton from "@/components/GuestLockButton";
 
 type IdeaBank = Record<string, string[]>;
 
@@ -15,6 +16,7 @@ const SEEDS: Record<string, string[]> = {
 const DEFAULT_BANK: IdeaBank = { talk: [], event: [], night: [], niche: [] };
 
 export default function IdeaBankPanel({ userId }: { userId: string | null }) {
+  const isGuest = !userId;
   const [bank, setBank] = useSyncedRecord<IdeaBank>(userId, "idea_bank", "gajumaru:ideaBank:v1", DEFAULT_BANK);
   const [cat, setCat] = useState("talk");
   const [input, setInput] = useState("");
@@ -75,8 +77,14 @@ export default function IdeaBankPanel({ userId }: { userId: string | null }) {
           placeholder="思いついたネタを入力…"
           style={{ flex: 1, minWidth: 160 }}
         />
-        <button className="btn" onClick={addIdea}>追加する</button>
-        <button className="btn secondary" onClick={addSeeds}>サンプルを追加</button>
+        {isGuest ? (
+          <GuestLockButton />
+        ) : (
+          <>
+            <button className="btn" onClick={addIdea}>追加する</button>
+            <button className="btn secondary" onClick={addSeeds}>サンプルを追加</button>
+          </>
+        )}
       </div>
       <div className="record-list">
         {list.length === 0 ? (

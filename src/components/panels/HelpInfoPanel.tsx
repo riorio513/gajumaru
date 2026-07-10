@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSyncedList } from "@/lib/useSyncedList";
 import { createClient } from "@/lib/supabase/client";
+import GuestLockButton from "@/components/GuestLockButton";
 
 type WinEntry = { id: string; entry_date: string; text: string };
 type HelpArticle = { id: string; title: string; body: string; sort_order: number };
@@ -19,6 +20,7 @@ export default function HelpInfoPanel({
   userId: string | null;
   isAdmin: boolean;
 }) {
+  const isGuest = !userId;
   const wins = useSyncedList<WinEntry>(userId, "gajumaru_win_diary", "gajumaru:winDiary:v1", "entry_date");
   const [input, setInput] = useState("");
 
@@ -116,7 +118,11 @@ export default function HelpInfoPanel({
             placeholder="例）立ち絵の依頼文を書いた"
             style={{ flex: 1, minWidth: 160 }}
           />
-          <button className="btn" onClick={addWin}>記録する</button>
+          {isGuest ? (
+            <GuestLockButton />
+          ) : (
+            <button className="btn" onClick={addWin}>記録する</button>
+          )}
         </div>
         <div className="record-list">
           {sortedWins.length === 0 ? (

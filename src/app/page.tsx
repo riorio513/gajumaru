@@ -13,7 +13,7 @@ export default async function TopPage() {
       <div className="login-card">
         <div className="icon">🌳</div>
         <h1>ガジュマル</h1>
-        <p className="tagline">IRIAM初配信までの「準備期間」に寄り添うノート</p>
+        <p className="tagline">IRIAM初配信までの「準備期間」を支えるノート</p>
 
         {user ? (
           <>

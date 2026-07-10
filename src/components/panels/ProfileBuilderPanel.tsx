@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSyncedRecord } from "@/lib/useSyncedRecord";
+import GuestLockButton from "@/components/GuestLockButton";
 
 type ProfileForm = {
   name: string;
@@ -45,6 +46,7 @@ const TONE_TEXT = {
 } as const;
 
 export default function ProfileBuilderPanel({ userId }: { userId: string | null }) {
+  const isGuest = !userId;
   const [form, setForm] = useSyncedRecord<ProfileForm>(
     userId,
     "profile_form",
@@ -134,9 +136,13 @@ export default function ProfileBuilderPanel({ userId }: { userId: string | null 
         </label>
       </div>
 
-      <button className="btn" style={{ marginTop: 6 }} onClick={generate}>
-        文章をつくる
-      </button>
+      {isGuest ? (
+        <GuestLockButton className="btn" />
+      ) : (
+        <button className="btn" style={{ marginTop: 6 }} onClick={generate}>
+          文章をつくる
+        </button>
+      )}
 
       {result && (
         <>
