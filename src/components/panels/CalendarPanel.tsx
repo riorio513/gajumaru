@@ -63,6 +63,23 @@ function getBanivPeriod(debut: Date) {
 // descShort（時間が少ない前提の言い回し）に差し替える
 const RUSHED_THRESHOLD_DAYS = 14;
 
+// spanDaysがLONG_THRESHOLD_DAYS以上（目安：数ヶ月〜1年）の場合、
+// 主要マイルストーンの間隔が空きすぎるため、月1回の振り返りチェックポイントを挟み込む
+const LONG_THRESHOLD_DAYS = 120;
+const CHECKPOINT_INTERVAL_DAYS = 30;
+
+function buildCheckpoints(start: Date, debut: Date, spanDays: number) {
+  const points: { d: Date; label: string; desc: string }[] = [];
+  for (let d = CHECKPOINT_INTERVAL_DAYS; d < spanDays - 14; d += CHECKPOINT_INTERVAL_DAYS) {
+    points.push({
+      d: addDays(start, d),
+      label: "📝 進み具合ふりかえりチェックポイント",
+      desc: "ここまでの準備をふりかえり、遅れているところがあれば優先順位を調整しましょう。ペースが早すぎてもゆっくりで大丈夫です",
+    });
+  }
+  return points;
+}
+
 const MILESTONES = [
   {
     ratio: 0,
@@ -132,6 +149,7 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
   const spanDays =
     start && debut && !invalidRange ? Math.round((debut.getTime() - start.getTime()) / 86400000) : null;
   const isRushed = spanDays !== null && spanDays < RUSHED_THRESHOLD_DAYS;
+  const isLong = spanDays !== null && spanDays >= LONG_THRESHOLD_DAYS;
 
   const items =
     start && debut && !invalidRange
@@ -156,7 +174,8 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
                 },
               ]
             : []),
-        ]
+          ...(isLong && spanDays !== null ? buildCheckpoints(start, debut, spanDays) : []),
+        ].sort((a, b) => a.d.getTime() - b.d.getTime())
       : [];
 
   return (
@@ -197,6 +216,12 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
         </div>
       )}
 
+      {isLong && (
+        <div className="empty-note" style={{ marginTop: 12 }}>
+          🌳 準備期間が{Math.round((spanDays ?? 0) / 30)}ヶ月ほどと長めです。主要なマイルストーンの間に、月1回の「ふりかえりチェックポイント」を挟んでいます。焦らず、こまめに進み具合を確認しながら進めましょう。
+        </div>
+      )}
+
       {items.length > 0 && (
         <ul className="timeline">
           {items.map((item, i) => (
@@ -210,7 +235,7 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
         </ul>
       )}
       <div className="disclaimer">
-        <b>おことわり：</b>X運用開始・立ち絵発注・まいにち配信バッジの目安はIRIAM公式の基準ではなく、事務所ブログや個人の体験談から見えてきたおおよその目安です。バナーイベント参加週は公式FAQの「初配信日時で決まる」ルールをもとに計算していますが、①1日の区切りは4:00のため配信開始時刻によっては前後の週になる場合がある、②その月に火曜日が5回ある場合は日程調整が入り表示とずれる場合がある、という点にご注意ください。実際のイベント条件・仕様は必ず公式FAQでご確認ください。無理のないペースを最優先にしてくださいね。
+        <b>おことわり：</b>X運用開始・立ち絵発注・まいにち配信バッジの目安、および「ふりかえりチェックポイント」はIRIAM公式の基準ではなく、事務所ブログや個人の体験談から見えてきたおおよその目安です。バナーイベント参加週は公式FAQの「初配信日時で決まる」ルールをもとに計算していますが、①1日の区切りは4:00のため配信開始時刻によっては前後の週になる場合がある、②その月に火曜日が5回ある場合は日程調整が入り表示とずれる場合がある、という点にご注意ください。実際のイベント条件・仕様は必ず公式FAQでご確認ください。無理のないペースを最優先にしてくださいね。
       </div>
     </div>
   );
