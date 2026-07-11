@@ -31,6 +31,21 @@ export default function HelpInfoPanel({
   const [formTitle, setFormTitle] = useState("");
   const [formBody, setFormBody] = useState("");
   const [saving, setSaving] = useState(false);
+  const [userCount, setUserCount] = useState<number | null>(null);
+  const [userCountError, setUserCountError] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    supabaseRef.current.rpc("admin_user_count").then(({ data, error }) => {
+      if (error) {
+        console.error("[admin_user_count] failed", error);
+        setUserCountError(true);
+        return;
+      }
+      setUserCount(data as number);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   async function loadArticles() {
     const { data, error } = await supabaseRef.current
@@ -141,6 +156,16 @@ export default function HelpInfoPanel({
       <div className="card">
         <h2 className="section-title" style={{ fontSize: ".98rem" }}>💌 お役立ち情報</h2>
         <p className="lead">準備期間の不安が少しでも軽くなるよう、運営から届けるお知らせやアドバイスです。</p>
+
+        {isAdmin && (
+          <div className="empty-note" style={{ marginBottom: 14 }}>
+            👤 登録ユーザー数：
+            {userCountError ? "取得に失敗しました" : userCount === null ? "確認中…" : `${userCount}人`}
+            <div style={{ fontSize: ".78rem", marginTop: 4, opacity: 0.75 }}>
+              ※ アカウント登録した人のみの人数です。ログインせず使っているゲスト利用者は含まれません。
+            </div>
+          </div>
+        )}
 
         {isAdmin && editingId !== "new" && (
           <button className="btn secondary" style={{ marginBottom: 14 }} onClick={startNew}>
