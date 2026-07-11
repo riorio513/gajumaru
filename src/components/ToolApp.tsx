@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import SideNav from "@/components/SideNav";
 import HomePanel from "@/components/panels/HomePanel";
 import ChecklistPanel from "@/components/panels/ChecklistPanel";
@@ -22,10 +21,13 @@ export default function ToolApp({ userId, isAdmin }: { userId: string | null; is
   return (
     <>
       <header>
-        <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+        <button
+          onClick={() => setActive("home")}
+          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit", font: "inherit", textAlign: "inherit" }}
+        >
           <div className="icon">🌳</div>
           <h1>ガジュマル</h1>
-        </Link>
+        </button>
         <p>IRIAM初配信までの「準備期間」に寄り添うノート</p>
       </header>
 

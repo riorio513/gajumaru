@@ -27,18 +27,27 @@ const DEFAULT_FORM: ProfileForm = {
 const TONE_TEXT = {
   polite: {
     greet: (n: string) => `はじめまして、${n}と申します。`,
+    likes: (v: string) => `${v}が好きで、配信でもその話をすることが多いかと思います。`,
+    schedule: (v: string) => `配信は${v}を目安に行っていく予定です。`,
+    goal: (v: string) => `まずは${v}を目標に、少しずつ精進してまいります。`,
     close: "至らないところも多いかと思いますが、どうぞよろしくお願いいたします。",
     talkGreet: (n: string) => `皆さん、はじめまして。${n}と申します。`,
     talkClose: "まだまだ不慣れですが、少しずつ頑張っていきますので、どうぞよろしくお願いいたします。",
   },
   friendly: {
     greet: (n: string) => `はじめまして！${n}です！`,
+    likes: (v: string) => `${v}が好きで、配信でもよく話すと思います！`,
+    schedule: (v: string) => `配信は${v}くらいでやっていく予定です！`,
+    goal: (v: string) => `まずは${v}を目指して頑張ります！`,
     close: "仲良くしてもらえたら嬉しいです、よろしくね！",
     talkGreet: (n: string) => `みなさん、はじめまして！${n}です！`,
     talkClose: "まだまだこれからだけど、みんなと楽しく配信していきたいので、よろしくお願いします！",
   },
   calm: {
     greet: (n: string) => `はじめまして、${n}です。`,
+    likes: (v: string) => `${v}が好きで、のんびりその話もできたらと思います。`,
+    schedule: (v: string) => `${v}くらいのペースで、ゆっくり配信できたらと思います。`,
+    goal: (v: string) => `${v}を、自分のペースで叶えていけたらと思います。`,
     close: "マイペースにゆっくりやっていくので、のんびり見てもらえたら嬉しいです。",
     talkGreet: (n: string) => `はじめまして……${n}です。`,
     talkClose: "緊張しますが、マイペースに頑張っていきたいと思います。よろしくお願いします。",
@@ -68,10 +77,10 @@ export default function ProfileBuilderPanel({ userId }: { userId: string | null 
     const T = TONE_TEXT[form.tone];
     const profileLines: string[] = [];
     profileLines.push(T.greet(form.name) + (form.catch ? `${form.catch}です。` : ""));
-    if (form.likes) profileLines.push(`好きなもの：${form.likes}`);
-    if (form.content) profileLines.push(form.content);
-    if (form.schedule) profileLines.push(`配信予定：${form.schedule}`);
-    if (form.goal) profileLines.push(`目標：${form.goal}`);
+    if (form.likes) profileLines.push(T.likes(form.likes));
+    if (form.content) profileLines.push(`やりたいこと・見て欲しいところ：${form.content}`);
+    if (form.schedule) profileLines.push(T.schedule(form.schedule));
+    if (form.goal) profileLines.push(T.goal(form.goal));
     profileLines.push(T.close);
 
     const talkParts: string[] = [];

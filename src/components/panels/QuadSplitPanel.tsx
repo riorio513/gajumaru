@@ -82,11 +82,57 @@ async function assemblePanel(topEntry: ImageEntry, center: HTMLCanvasElement, bo
   return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), "image/png"));
 }
 
+// 「今どの場所の画像を求められているか」を文章だけでなく図でも伝えるための4分割ミニ図。
+// 各パネルは実際の合成結果と同じく「上部・中央（元画像の分割）・下部」の3段構成で描く。
+function QuadPositionDiagram({ def }: { def: StepDef }) {
+  const isBase = def.kind === "base";
+  const CENTER_FILLED = "#c8e6c9"; // 元画像から自動で入る中央部分（このステップでは触らない）
+  const ACTIVE = "#ffb300"; // 今このステップで添付を求めている場所
+  const EMPTY = "#f0f0f0"; // まだ何も入っていない場所
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gridTemplateRows: "1fr 1fr",
+        gap: 8,
+        width: 140,
+        height: 140,
+        margin: "12px auto 0",
+      }}
+    >
+      {PANEL_DEFS.map((p, panelIndex) => {
+        const isActivePanel = !isBase && def.kind === "block" && def.panelIndex === panelIndex;
+        const topColor = isActivePanel && def.kind === "block" && def.block === "top" ? ACTIVE : EMPTY;
+        const bottomColor = isActivePanel && def.kind === "block" && def.block === "bottom" ? ACTIVE : EMPTY;
+        const centerColor = isBase ? ACTIVE : CENTER_FILLED;
+        return (
+          <div
+            key={p.key}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              border: "2px solid var(--border-color, #ccc)",
+              borderRadius: 6,
+              overflow: "hidden",
+            }}
+          >
+            <div style={{ flex: 1, background: topColor }} />
+            <div style={{ flex: 2, background: centerColor }} />
+            <div style={{ flex: 1, background: bottomColor }} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function PixelNote() {
   return (
     <div className="disclaimer" style={{ marginTop: 12 }}>
       <b>画素数の目安：</b>
-      タイムライン用の元画像は横長（16:9目安、例:2048×1186px）で用意すると、4分割後のバランスが良くなります。上部・下部の告知画像は自動的に中央イラストの幅に合わせて拡大縮小されるので、極端に細長い・横広な画像でなければ問題ありません。ファイルサイズは各画像2MB程度以内に収めておくと安心です。
+      縦：1186px、横：2048pxが推奨サイズとなります。本サイトの画像作成ツールはこのサイズを変更するとうまく作成されないため、注意してください。
     </div>
   );
 }
@@ -201,7 +247,7 @@ export default function QuadSplitPanel({ userId }: { userId: string | null }) {
       <div className="card">
         <h2 className="section-title">🧩 四分割画像作成</h2>
         <p className="lead">
-          タイムラインで1枚に結合して見える中央イラストと、各パネルの上部・下部に載せる告知情報を順に添付していきます。4枚そろったら自動で合成し、投稿できる形にまとめます。画像はこの端末の中だけで扱われ、サーバーには送信・保存されません。
+          初配信告知やガチイベの告知の際に使う、四分割画像を作成できます。タイムラインで一枚に結合して見える中央イラストと、各パネルの上部・下部に載せる画像を添付していきます。最後に自動で合成し、投稿できる形にまとめます。画像は保存されないため、生成された画像は各自で保存してください。
         </p>
         {isGuest ? (
           <GuestLockButton />
@@ -232,6 +278,7 @@ export default function QuadSplitPanel({ userId }: { userId: string | null }) {
         {allSet ? (
           <>
             <p className="lead">この並びのまま、①→②→③→④の順でTwitter(X)に投稿してください。</p>
+            <p className="lead">保存した画像は、左から順にXに添付することで四分割画像として投稿できます。</p>
             <div className="quad-row">
               {PANEL_DEFS.map((p) => (
                 <div className="quad-cell" key={p.key}>
@@ -273,13 +320,16 @@ export default function QuadSplitPanel({ userId }: { userId: string | null }) {
         🧩 四分割画像作成（{stage + 1}/{STEPS.length}）
       </h2>
       <p className="lead">{instruction}</p>
-      <div className="date-input-row">
+      <QuadPositionDiagram def={def} />
+      <div className="date-input-row" style={{ marginTop: 12 }}>
         <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
       {pendingFile && (
-        <div className="quad-cell" style={{ maxWidth: 220, marginTop: 12 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={pendingFile.url} alt="プレビュー" />
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
+          <div className="quad-cell" style={{ maxWidth: 220 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={pendingFile.url} alt="プレビュー" />
+          </div>
         </div>
       )}
       {error && <div className="empty-note" style={{ marginTop: 12 }}>{error}</div>}

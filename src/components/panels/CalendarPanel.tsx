@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useSyncedRecord } from "@/lib/useSyncedRecord";
 
 function addDays(date: Date, days: number) {
@@ -120,24 +121,46 @@ const MILESTONES = [
 ];
 
 export default function CalendarPanel({ userId }: { userId: string | null }) {
-  const [prepStart, setPrepStart] = useSyncedRecord<string>(
+  const [prepStart, setPrepStart, prepStartLoaded] = useSyncedRecord<string>(
     userId,
     "prep_start_date",
     "gajumaru:prepStart:v1",
     ""
   );
-  const [debutDate, setDebutDate] = useSyncedRecord<string>(
+  const [debutDate, setDebutDate, debutDateLoaded] = useSyncedRecord<string>(
     userId,
     "debut_date",
     "gajumaru:debutDate:v1",
     ""
   );
 
+  const [draftPrepStart, setDraftPrepStart] = useState("");
+  const [draftDebutDate, setDraftDebutDate] = useState("");
+
+  useEffect(() => {
+    if (prepStartLoaded) setDraftPrepStart(prepStart);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prepStartLoaded]);
+  useEffect(() => {
+    if (debutDateLoaded) setDraftDebutDate(debutDate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debutDateLoaded]);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   function useTodayAsStart() {
-    setPrepStart(todayISO());
+    setDraftPrepStart(todayISO());
+  }
+
+  function confirmDates() {
+    setPrepStart(draftPrepStart);
+    setDebutDate(draftDebutDate);
+  }
+
+  function clearDebut() {
+    setDraftDebutDate("");
+    setDebutDate("");
   }
 
   const start = prepStart ? new Date(prepStart + "T00:00:00") : null;
@@ -159,7 +182,7 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
             label: m.label,
             desc: isRushed ? m.descShort : m.desc,
           })),
-          { d: debut, label: "🎉 初配信（デビュー日）", desc: "ここがスタートライン" },
+          { d: debut, label: "🎉 初配信（デビュー日）", desc: "ここがスタートライン。楽しい配信をしてください" },
           {
             d: addDays(debut, 6),
             label: "まいにち配信バッジ 達成目安",
@@ -186,22 +209,30 @@ export default function CalendarPanel({ userId }: { userId: string | null }) {
       </p>
       <div className="date-input-row" style={{ marginBottom: 8 }}>
         <label style={{ fontSize: ".82rem", color: "var(--text-sub)", minWidth: 100 }}>準備開始日</label>
-        <input type="date" value={prepStart} onChange={(e) => setPrepStart(e.target.value)} />
-        {!prepStart && (
+        <input type="date" value={draftPrepStart} onChange={(e) => setDraftPrepStart(e.target.value)} />
+        {!draftPrepStart && (
           <button className="btn secondary" onClick={useTodayAsStart}>
             今日にする
           </button>
         )}
       </div>
-      <div className="date-input-row">
+      <div className="date-input-row" style={{ marginBottom: 8 }}>
         <label style={{ fontSize: ".82rem", color: "var(--text-sub)", minWidth: 100 }}>デビュー予定日</label>
-        <input type="date" value={debutDate} onChange={(e) => setDebutDate(e.target.value)} />
-        {debutDate && (
-          <button className="btn secondary" onClick={() => setDebutDate("")}>
+        <input type="date" value={draftDebutDate} onChange={(e) => setDraftDebutDate(e.target.value)} />
+        {draftDebutDate && (
+          <button className="btn secondary" onClick={clearDebut}>
             クリア
           </button>
         )}
       </div>
+      <button
+        className="btn"
+        style={{ marginBottom: 8 }}
+        disabled={!draftPrepStart || !draftDebutDate}
+        onClick={confirmDates}
+      >
+        決定
+      </button>
 
       {invalidRange && (
         <div className="empty-note" style={{ marginTop: 12 }}>
