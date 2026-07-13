@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-type ListTable = "gajumaru_stream_logs" | "gajumaru_visit_logs" | "gajumaru_win_diary";
+type ListTable =
+  | "gajumaru_stream_logs"
+  | "gajumaru_visit_logs"
+  | "gajumaru_win_diary"
+  | "gajumaru_calendar_events";
 
 /**
  * ログイン中は指定テーブルへinsert/delete、ゲスト時はlocalStorageの配列に保存する

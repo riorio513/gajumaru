@@ -2,6 +2,7 @@ export type PanelKey =
   | "home"
   | "checklist"
   | "calendar"
+  | "monthcalendar"
   | "profile"
   | "tracker"
   | "diagnosis"
@@ -14,6 +15,7 @@ export const PANEL_LABELS: Record<PanelKey, string> = {
   home: "ホーム",
   checklist: "準備チェックリスト",
   calendar: "準備ロードマップ",
+  monthcalendar: "カレンダー",
   profile: "自己紹介文ビルダー",
   tracker: "枠周り記録",
   diagnosis: "機材・ジャンル診断",
@@ -24,7 +26,7 @@ export const PANEL_LABELS: Record<PanelKey, string> = {
 };
 
 // ハンバーガーメニューのトップレベル項目
-export const TOP_NAV_ORDER: PanelKey[] = ["home", "checklist", "calendar"];
+export const TOP_NAV_ORDER: PanelKey[] = ["home", "checklist", "calendar", "monthcalendar"];
 
 // 「お役立ち機能」サブメニューにまとめる項目
 export const HELP_GROUP_LABEL = "お役立ち機能";

@@ -5,6 +5,7 @@ import SideNav from "@/components/SideNav";
 import HomePanel from "@/components/panels/HomePanel";
 import ChecklistPanel from "@/components/panels/ChecklistPanel";
 import CalendarPanel from "@/components/panels/CalendarPanel";
+import MonthCalendarPanel from "@/components/panels/MonthCalendarPanel";
 import ProfileBuilderPanel from "@/components/panels/ProfileBuilderPanel";
 import TrackerPanel from "@/components/panels/TrackerPanel";
 import DiagnosisPanel from "@/components/panels/DiagnosisPanel";
@@ -40,6 +41,7 @@ export default function ToolApp({ userId, isAdmin }: { userId: string | null; is
         {active === "home" && <HomePanel userId={userId} onNavigate={setActive} />}
         {active === "checklist" && <ChecklistPanel userId={userId} />}
         {active === "calendar" && <CalendarPanel userId={userId} />}
+        {active === "monthcalendar" && <MonthCalendarPanel userId={userId} />}
         {active === "profile" && <ProfileBuilderPanel userId={userId} />}
         {active === "tracker" && <TrackerPanel userId={userId} />}
         {active === "diagnosis" && <DiagnosisPanel />}
